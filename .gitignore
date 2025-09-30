@@ -208,3 +208,11 @@ __marimo__/
 
 # npm
 node_modules/
+
+# entorno virtuales
+.venv/
+env/
+venv/
+
+# entornos de desarrollo
+.vscode/

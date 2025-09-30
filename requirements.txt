@@ -1,0 +1,7 @@
+azure-identity
+azure-keyvault-secrets
+pydantic
+langchain-google-genai
+langchain-community
+azure-search-documents
+azure-ai-formrecognizer
