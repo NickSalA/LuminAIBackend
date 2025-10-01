@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.0.0...v1.1.0) (2025-10-01)
+
+
+### Features
+
+*  añadido estructura de agente tutor e implementacion de tool de retriever ([fdff43f](https://github.com/NickSalA/LuminAIBackend/commit/fdff43f8c59a220144179ebe150d18bf07da1ab7))
+
 # 1.0.0 (2025-09-30)
 
 
