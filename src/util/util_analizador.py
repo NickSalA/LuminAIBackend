@@ -3,7 +3,7 @@ from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 
 # Helpers propios
-from src.util.util_key import obtenerAPI
+from src.util.util_credenciales import obtenerAPI
 
 nombre_servicio = "sopport-di" # CAMBIAR NOMBRE
 

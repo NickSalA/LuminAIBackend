@@ -1,6 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from src.util.util_key import obtenerAPI
+from src.util.util_credenciales import obtenerAPI
 
 def obtenerModelo() -> ChatGoogleGenerativeAI:
     return ChatGoogleGenerativeAI(

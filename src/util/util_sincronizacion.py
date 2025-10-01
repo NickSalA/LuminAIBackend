@@ -11,7 +11,7 @@ from azure.ai.formrecognizer import DocumentAnalysisClient
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # Helpers propios
-from src.util.util_documentos import conectarDocumentIntelligence
+from src.util.util_analizador import conectarDocumentIntelligence
 from src.util.util_retriever import conectarBaseDeConocimientos
 
 # -------------------------------
