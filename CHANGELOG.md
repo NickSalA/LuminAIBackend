@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.1.0...v1.2.0) (2025-10-08)
+
+
+### Features
+
+* implement database connection utility and enhance agent evaluation flow ([82ecd9a](https://github.com/NickSalA/LuminAIBackend/commit/82ecd9a48176c78832354a19d392f780c93289aa))
+
 # [1.1.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.0.0...v1.1.0) (2025-10-01)
 
 
