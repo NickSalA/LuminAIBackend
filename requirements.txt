@@ -10,3 +10,5 @@ fastapi
 uvicorn
 itsdangerous
 sqlmodel
+langgraph-checkpoint-postgres
+psycopg[binary]

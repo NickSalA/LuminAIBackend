@@ -11,7 +11,7 @@ class AgenteTutor:
         user: dict,
         contexto: ChatPromptTemplate,
         thread: str = "",
-        checkpoint_ns: str = "soporte",
+        checkpoint_ns: str = "lumin",
         tools: list | None = None,
         memoria=None,
     ):
@@ -38,7 +38,7 @@ class AgenteTutor:
         """
         # Siempre generamos un nuevo thread id para garantizar que la conversación
         # previa no se siga mezclando (independiente del tipo de saver)
-        thread = f"persona:{self.user.get('persona_id') or 'anon'}-{uuid.uuid4().hex}"
+        thread = f"usuario:{self.user.get('usuario_id') or 'anon'}-{uuid.uuid4().hex}"
 
         if isinstance(self.memoria, InMemorySaver):
             # Reinicia la memoria en RAM y reconstruye el agente con un nuevo hilo
