@@ -4,7 +4,7 @@ from langgraph.checkpoint.postgres import PostgresSaver
 # Helpers propios
 from src.util.util_credenciales import obtenerAPI
 
-def obtenerConexionBaseDeDatos():
+def obtenerConexionCheckpointer():
     try:
         conn = PostgresSaver.from_conn_string(obtenerAPI("CONF-DATABASE-URL"))
         saver = conn.__enter__()
