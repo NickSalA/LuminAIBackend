@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.1...v1.3.0) (2025-10-09)
+
+
+### Features
+
+* corregir el tema de las funciones de los agentes - decidir la forma que se utiliza la BC ([ba8a6ce](https://github.com/NickSalA/LuminAIBackend/commit/ba8a6ce7e28ce7e513bd1caa76584ceebe2b17a9))
+
 ## [1.2.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.0...v1.2.1) (2025-10-09)
 
 
