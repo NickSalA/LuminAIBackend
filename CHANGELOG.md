@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.0...v1.2.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* Corrección del prompt de AgenteTutor ([1f68064](https://github.com/NickSalA/LuminAIBackend/commit/1f68064fc28934da76fce05dca0fc93ed9a5db60))
+
 # [1.2.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.1.0...v1.2.0) (2025-10-08)
 
 
