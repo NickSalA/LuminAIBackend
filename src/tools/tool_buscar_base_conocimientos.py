@@ -14,7 +14,7 @@ def BC_Tool() -> Tool:
         retriever=retriever,
         name="BaseDeConocimientos",
         description=(
-            "Eres BC_Tool. Sólo puedes buscar y devolver fragmentos de la base de conocimiento (FAQ, guías, SOPs)."
+            "Eres BC_Tool. Sólo puedes buscar y devolver fragmentos de la base de conocimiento."
             "No inventes contenido. Devuelve texto y metadatos de la fuente."
             "Si no encuentras resultados relevantes, responde vacío."
         ),

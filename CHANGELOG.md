@@ -1,3 +1,24 @@
+# [1.3.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.1...v1.3.0) (2025-10-09)
+
+
+### Features
+
+* corregir el tema de las funciones de los agentes - decidir la forma que se utiliza la BC ([ba8a6ce](https://github.com/NickSalA/LuminAIBackend/commit/ba8a6ce7e28ce7e513bd1caa76584ceebe2b17a9))
+
+## [1.2.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.0...v1.2.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* Corrección del prompt de AgenteTutor ([1f68064](https://github.com/NickSalA/LuminAIBackend/commit/1f68064fc28934da76fce05dca0fc93ed9a5db60))
+
+# [1.2.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.1.0...v1.2.0) (2025-10-08)
+
+
+### Features
+
+* implement database connection utility and enhance agent evaluation flow ([82ecd9a](https://github.com/NickSalA/LuminAIBackend/commit/82ecd9a48176c78832354a19d392f780c93289aa))
+
 # [1.1.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.0.0...v1.1.0) (2025-10-01)
 
 

@@ -11,3 +11,6 @@ uvicorn
 itsdangerous
 sqlalchemy
 oracledb
+sqlmodel
+langgraph-checkpoint-postgres
+psycopg[binary]
