@@ -9,4 +9,5 @@ langgraph
 fastapi
 uvicorn
 itsdangerous
-sqlmodel
+sqlalchemy
+oracledb
