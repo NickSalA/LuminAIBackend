@@ -8,6 +8,8 @@ import uvicorn
 
 from src.api.agents.agents_get import agents_get_router
 
+from src.api.usuarios_api import routerUsuarios
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     conn, saver = obtenerConexionCheckpointer() 
@@ -26,6 +28,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="LuminAI API", lifespan=lifespan)
 
 app.include_router(agents_get_router, prefix="/agents", tags=[""])
+app.include_router(routerUsuarios, tags=["Autentificacion"])
 
 @app.get("/")
 def home():
