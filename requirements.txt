@@ -9,6 +9,10 @@ langgraph
 fastapi
 uvicorn
 itsdangerous
+sqlalchemy
+oracledb
 sqlmodel
 langgraph-checkpoint-postgres
 psycopg[binary]
+python-jose[cryptography] # Para manejar JWTs
+passlib[bcrypt]
