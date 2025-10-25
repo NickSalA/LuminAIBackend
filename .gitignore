@@ -216,3 +216,4 @@ venv/
 
 # entornos de desarrollo
 .vscode/
+.idea/
