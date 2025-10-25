@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.3.0...v1.4.0) (2025-10-25)
+
+
+### Features
+
+* add IDE configuration directories to .gitignore ([8d0fc2b](https://github.com/NickSalA/LuminAIBackend/commit/8d0fc2b56cbc95e1523ea2fd9c1f5db47ab0b52d))
+
 # [1.3.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.2.1...v1.3.0) (2025-10-09)
 
 
