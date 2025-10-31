@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.4.0...v1.5.0) (2025-10-31)
+
+
+### Features
+
+* Actualizar credenciales para la api de azure ([6d22d9d](https://github.com/NickSalA/LuminAIBackend/commit/6d22d9d38fec6ad65ec0a26e1bb0867a3404caf4))
+
 # [1.4.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.3.0...v1.4.0) (2025-10-25)
 
 
