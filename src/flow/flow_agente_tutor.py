@@ -10,7 +10,7 @@ def PromptSistema(user: dict):
     username = user.get("username", "usuario")
     tema = user.get("tema", "Tema no especificado")
     nivel = user.get("nivel", "Nivel no especificado")
-    lenguaje = user.get("lenguaje", "Lenguaje no especificado")
+    lenguaje = user.get("lenguaje", "Python")
 
     informacionUsuario = (
         f"""
