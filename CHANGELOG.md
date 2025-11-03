@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.5.0...v1.6.0) (2025-11-03)
+
+
+### Features
+
+* Mejora del prompt de respuesta y preguntas ([926a9d9](https://github.com/NickSalA/LuminAIBackend/commit/926a9d90b4ead598b2da9b222d3b133628402f60))
+
 # [1.5.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.4.0...v1.5.0) (2025-10-31)
 
 
