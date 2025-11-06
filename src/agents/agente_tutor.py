@@ -25,11 +25,12 @@ class AgenteTutor:
         self.agente = crearAgente(llm, contexto, self.tools, self.memoria)
     
     def responder(self, consulta: str = ""):
-        return ejecutar(self.agente, consulta, config= {
-            "user": self.user,
-            "thread": self.thread,
-            "checkpoint_ns": self.checkpoint_ns,
-        })
+        return ejecutar(self.agente, consulta, config={
+                "configurable": {
+                    "thread_id": f"{self.thread}",
+                    "checkpoint_ns": f"{self.checkpoint_ns}",
+                }
+            },)
 
     def reiniciarMemoria(self) -> str:
         """
