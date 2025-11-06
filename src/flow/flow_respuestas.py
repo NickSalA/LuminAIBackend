@@ -4,8 +4,8 @@ from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
 def PromptEvaluador(seccion: dict, preguntas: dict = {}, respuestas: dict = {}) -> str:
     seccion = seccion or {}
-    tema = seccion.get("tema", "Tema no especificado")
-    nivel = seccion.get("nivel", "Nivel no especificado")
+    tema = seccion.get("tema", "Introducción a If y Bucles")
+    nivel = seccion.get("nivel", "Fácil")
     lenguaje = "Python"
 
     informacionSeccion = f"""
@@ -26,7 +26,7 @@ def PromptEvaluador(seccion: dict, preguntas: dict = {}, respuestas: dict = {}) 
     3. **Claridad y coherencia**: la respuesta está bien estructurada, comprensible y sigue una lógica clara.
 
     Indicaciones:
-    - No des explicaciones largas ni retroalimentación.
+    - No des explicaciones ni retroalimentación.
     - Solo califica.
     - Usa valores de puntaje entre 0 y 1 (puede ser decimal si es parcialmente correcto).
     - Evalúa cada pregunta de forma independiente.
@@ -81,5 +81,5 @@ class FlowAgenteRespuestas:
             tools=[BC_Tool()],
         )
         
-    def evaluarRespuesta(self):
+    def evaluarRespuestas(self):
         return self.AgenteEvaluador.responder("Evalúa las respuestas proporcionadas según las preguntas dadas y devuelve SOLO el JSON con los puntajes.")

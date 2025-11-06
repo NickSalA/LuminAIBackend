@@ -100,8 +100,8 @@ class FlowAgenteRetroalimentacion:
             checkpoint_ns=f"retroalimentacion:{self.user.get('usuario_id')}",
         )
     
-    def darRetroalimentacion(self, preguntasRespuestas):
-        return self.AgenteTutor.responder(preguntasRespuestas)
+    def darRetroalimentacion(self):
+        return self.AgenteTutor.responder("Dame una retroalimentación detallada de mi desempeño en la práctica, señalando mis aciertos y errores, y sugiriendo áreas de mejora. Sé específico y constructivo. Comienza con un saludo personalizado.")
     
     def responderMensaje(self, mensaje: str = ""):
         return self.AgenteTutor.responder(mensaje)
