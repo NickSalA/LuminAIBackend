@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.7.0...v1.7.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* Corrección de la forma en que se llamaba el config de la respuesta del agente ([2acc0c1](https://github.com/NickSalA/LuminAIBackend/commit/2acc0c1a899c3e03c0781e8eac3e6f0235d4a72e))
+
 # [1.7.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.6.0...v1.7.0) (2025-11-06)
 
 
