@@ -7,6 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 # Manejo de memoria del agente
 from langgraph.checkpoint.memory import InMemorySaver
 
+import json
 
 def crearAgente(
     llm: ChatGoogleGenerativeAI, contexto: str, tools: list | None = None, memoria=None
@@ -32,13 +33,23 @@ def crearAgenteSinMemoria(
 
 def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True):
     payload = {"messages": [{"role": "user", "content": consulta}]}
-    if config is not None:
-        respuesta = agente.invoke(payload, config=config)
-    else:
-        respuesta = agente.invoke(payload)
+    
+    respuesta = agente.invoke(payload, config=config)
     try:
         if not verbose:
             return respuesta
         return respuesta["messages"][-1].content
+    except Exception as e:
+        raise Exception(f'Error en la ejecución del agente: {e}')
+
+def ejecutarSinMemoria(agente, consulta: str = "", verbose: bool = True):
+    payload = {"messages": [{"role": "user", "content": consulta}]}
+    
+    respuesta = agente.invoke(payload)
+    try:
+        if not verbose:
+            return respuesta
+        respuesta = respuesta["messages"][-1].content.replace("```json", "").replace("```", "")
+        return json.loads(respuesta)
     except Exception as e:
         raise Exception(f'Error en la ejecución del agente: {e}')

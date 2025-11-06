@@ -6,7 +6,7 @@ def PromptEvaluador(seccion: dict) -> str:
     seccion = seccion or {}
     tema = seccion.get("tema", "Introducción a If y Bucles")
     lenguaje = "Python"
-    nivel = seccion.get("nivel", "Facil")
+    nivel = seccion.get("nivel", "Básico")
     
     informacionSeccion = (
         f"""
@@ -19,7 +19,7 @@ def PromptEvaluador(seccion: dict) -> str:
 
     identidad = (
         f"""
-    Eres 'GeneradorAI', un asistente que crea prácticas de programación con 5 preguntas.
+    Eres un asistente que crea prácticas de programación con 5 preguntas.
     Reglas:
     - TODO en español.
     - Solo código y ejemplos en Python.
@@ -44,41 +44,34 @@ def PromptEvaluador(seccion: dict) -> str:
     """
 
     formatoJSON = (r"""
-    FORMATO JSON DE SALIDA (único y obligatorio):
-    {
-    "preguntas": [
+    FORMATO JSON DE SALIDA (estricto):
+    - Devuelve SOLO un objeto JSON válido (application/json).
+    - No uses Markdown, no uses comillas invertidas/backticks (```), no incluyas texto fuera del objeto.
+    - No uses null ni arrays vacíos para campos opcionales: omite el campo si no aplica.
+    - Campos:
         {
-            "id": "<id_unico>",
-            "tipo": "seleccion_unica" | "respuesta_libre" | "arregla_codigo" | "completa_codigo",
-            "enunciado": "<texto conciso>",
-            "codigo_inicial": "<string con \\n escapado si aplica>",
-            "opciones": ["<op1>", "<op2>", "<op3>", "<op4>"] // solo si el tipo lo requiere
+            "preguntas": [
+                {
+                    "id": "<id_unico>", // q1, q2, q3, q4, q5
+                    "tipo": "seleccion_unica" | "respuesta_libre" | "arregla_codigo" | "completa_codigo",
+                    "enunciado": "<texto conciso>",
+                    "codigo_inicial": "<string con \\n escapado si aplica>",
+                    "opciones": ["<op1>", "<op2>", "<op3>", "<op4>"] // solo si el tipo lo requiere
+                }
+            ]
         }
-    ]
-    }
-
-    DETALLES POR TIPO:
-    - seleccion_unica:
-        • Incluye 4 opciones exactamente.
-        • El campo 'opciones' debe existir.
-        • El usuario elegirá una de las 4 (texto o índice).
-
-    - respuesta_libre:
-        • No incluye 'opciones'.
-        • El usuario escribirá una explicación corta.
-
-    - arregla_codigo:
-        • No incluye 'opciones'.
-        • 'codigo_inicial' contiene un error claro (sintaxis, indentación o lógica simple).
-
-    - completa_codigo:
-        • Incluye 'opciones' con 4 fragmentos de código.
-        • El usuario debe ordenar o seleccionar los fragmentos correctos.
+    - Validación:
+        • EXACTAMENTE 5 preguntas.
+        • Al menos 1 de cada tipo.
+        • 'respuesta_libre' y 'arregla_codigo' NO incluyen 'opciones'.
+        • 'completa_codigo' y 'seleccion_unica' SÍ incluyen 'opciones' (exactamente 4).
     """
     )
     
     instrucciones = """
-    Genera la práctica ahora para el tema y nivel dados. Responde SOLO con el JSON válido siguiendo el formato anterior.
+    Genera la práctica ahora para el tema y nivel dados.
+    Responde SOLO con el objeto JSON válido siguiendo el formato anterior.
+    NO incluyas ``` ni etiquetas de lenguaje ni comentarios.
     """
 
     message = (

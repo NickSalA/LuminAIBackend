@@ -1,5 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from src.util.util_agente import crearAgenteSinMemoria, ejecutar
+from src.util.util_agente import crearAgenteSinMemoria, ejecutarSinMemoria
 
 class AgenteEvaluador:
     def __init__(self,
@@ -13,4 +13,4 @@ class AgenteEvaluador:
         self.agente = crearAgenteSinMemoria(llm, contexto, self.tools)
     
     def responder(self, consulta: str = ""):
-        return ejecutar(self.agente, consulta)
+        return ejecutarSinMemoria(self.agente, consulta)

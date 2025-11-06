@@ -13,6 +13,7 @@ agents_get_router = APIRouter()
 class ChatIn(BaseModel):
     mensaje: str
 
+
 @agents_get_router.post("/tutor")
 def obtener_tutor(req: Request, body: ChatIn):
     user =  {}#req.session.get("user")
