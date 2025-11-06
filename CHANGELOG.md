@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.0...v1.8.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* Refactorizando la IA en Agente Respuestas y retroalimentación ([36a36a8](https://github.com/NickSalA/LuminAIBackend/commit/36a36a8d82ef9ea1b3b665ed39ab70e336729397))
+
 # [1.8.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.7.1...v1.8.0) (2025-11-06)
 
 
