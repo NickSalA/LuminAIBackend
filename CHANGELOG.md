@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.6.0...v1.7.0) (2025-11-06)
+
+
+### Features
+
+* Implementar CORS y sesión en la API, actualizar rutas y mejorar el modelo de lenguaje ([bdb7588](https://github.com/NickSalA/LuminAIBackend/commit/bdb75889142edd0bb4839519bab9130c0cbdf595))
+
 # [1.6.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.5.0...v1.6.0) (2025-11-03)
 
 
