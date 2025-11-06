@@ -8,7 +8,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 class AgenteEvaluador:
     def __init__(self,
         llm: ChatGoogleGenerativeAI,
-        contexto: ChatPromptTemplate,
+        contexto: str,
         tools: list | None = None,
         memoria=None,
     ):

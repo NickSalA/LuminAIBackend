@@ -8,7 +8,7 @@ def obtenerConexionCheckpointer():
     try:
         conn = PostgresSaver.from_conn_string(obtenerAPI("CONF-DATABASE-URL"))
         saver = conn.__enter__()
-        saver.setup() 
+        saver.setup()
         print("Conexión a la base de datos establecida.")
         return conn, saver
     except Exception as e:

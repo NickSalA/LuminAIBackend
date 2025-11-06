@@ -9,7 +9,7 @@ class AgenteTutor:
     def __init__(self,
         llm: ChatGoogleGenerativeAI,
         user: dict,
-        contexto: ChatPromptTemplate,
+        contexto: str,
         thread: str = "",
         checkpoint_ns: str = "lumin",
         tools: list | None = None,

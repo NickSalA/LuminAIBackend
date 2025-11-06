@@ -1,8 +1,9 @@
 azure-identity
 azure-keyvault-secrets
 pydantic
-langchain-google-genai
+langchain
 langchain-community
+langchain-openai
 azure-search-documents
 azure-ai-formrecognizer
 langgraph
@@ -16,3 +17,4 @@ langgraph-checkpoint-postgres
 psycopg[binary]
 python-jose[cryptography] # Para manejar JWTs
 passlib[bcrypt]
+starlette
