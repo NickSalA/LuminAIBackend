@@ -1,9 +1,7 @@
-from langchain_core.prompts import prompt
 from src.util.util_llm import obtenerModelo
 from src.agents.agente_tutor import AgenteTutor
 import uuid
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
-
 def PromptSistema(user: dict, seccion: dict) -> str:
     user = user or {}
     nombre = user.get("nombre", "Nick")
@@ -117,18 +115,19 @@ def PromptSistema(user: dict, seccion: dict) -> str:
     return prompt
 
 class FlowAgenteTutor:
-    def __init__(self, user, seccion):
+    def __init__(self, user, seccion, saver):
         self.llm = obtenerModelo()
         self.user = user
         self.seccion = seccion
         self.user["thread_id"] = self.user.get("thread_id") or (
-        f"usuario-{uuid.uuid4().hex}"
+        f"usuario-{uuid.uuid4().hex}" # self.user.get("thread_id") or {f"usuario:{self.user.get('user_id')}-{uuid.uuid4().hex}"
         )
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
             user=self.user,
             tools = [BC_Tool()],
+            memoria= saver,
             contexto=PromptSistema(self.user, self.seccion),
             thread=self.user["thread_id"],
             checkpoint_ns=f"tutor:{self.user.get('usuario_id')}",

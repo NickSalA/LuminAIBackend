@@ -1,13 +1,12 @@
 from src.agents.agente_evaluador import AgenteEvaluador
 from src.util.util_llm import obtenerModelo
-from langchain_core.prompts import ChatPromptTemplate
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
-def PromptEvaluador(seccion: dict):
+def PromptEvaluador(seccion: dict) -> str:
     seccion = seccion or {}
-    tema = seccion.get("tema", "Sin tema")
-    lenguaje = seccion.get("lenguaje", "Python")
-    nivel = seccion.get("nivel", "básico")
+    tema = seccion.get("tema", "Introducción a If y Bucles")
+    lenguaje = "Python"
+    nivel = seccion.get("nivel", "Facil")
     
     informacionSeccion = (
         f"""
@@ -80,16 +79,18 @@ def PromptEvaluador(seccion: dict):
     
     instrucciones = """
     Genera la práctica ahora para el tema y nivel dados. Responde SOLO con el JSON válido siguiendo el formato anterior.
-    """    
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", informacionSeccion),
-        ("system", identidad),
-        ("system", formatoTipos),
-        ("system", formatoJSON),
-        ("system", instrucciones),
-    ])
+    """
 
+    message = (
+        informacionSeccion,
+        identidad,
+        formatoTipos,
+        formatoJSON,
+        instrucciones,
+    )
+
+    prompt = "\n".join(message)
+    
     return prompt
 
 class FlowAgentePreguntas:
@@ -100,5 +101,5 @@ class FlowAgentePreguntas:
             contexto=PromptEvaluador(seccion),
             tools=[BC_Tool()],
         )
-    def evaluarRespuesta(self, mensaje: str = ""):
-        return self.AgenteEvaluador.responder(mensaje)
+    def generarPreguntas(self):
+        return self.AgenteEvaluador.responder("Genera AHORA la práctica con EXACTAMENTE 5 preguntas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")

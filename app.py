@@ -51,7 +51,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="cambia-esto-en-prod",
     same_site="lax",
-    https_only=False,   # pon True en producción HTTPS
+    https_only=True,   # pon True en producción HTTPS
     # session_cookie="support_session",
 )
 

@@ -1,6 +1,9 @@
 # Rutas API para analistas
 from fastapi import APIRouter, Request, HTTPException
 from src.flow.flow_agente_tutor import FlowAgenteTutor
+from src.flow.flow_preguntas import FlowAgentePreguntas
+from src.flow.flow_respuestas import FlowAgenteRespuestas
+from src.flow.flow_retroalimentacion import FlowAgenteRetroalimentacion
 
 # Modelos
 from pydantic import BaseModel
@@ -21,8 +24,11 @@ def obtener_tutor(req: Request, body: ChatIn):
     if not seccion: # PARA TESTEAR
         seccion = {}
         # raise HTTPException(status_code=401, detail="Sección no especificada")
-
-    orq = FlowAgenteTutor(user, seccion)
+    saver = getattr(req.app.state, "checkpointer", None)
+    if saver is None:
+        raise HTTPException(500, "server_config: checkpointer ausente")
+    
+    orq = FlowAgenteTutor(user, seccion, saver=saver)
     if user.get("thread_id") != orq.user.get("thread_id"):
         user["thread_id"] = orq.user.get("thread_id")
         req.session["user"] = user
@@ -31,3 +37,18 @@ def obtener_tutor(req: Request, body: ChatIn):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Error al enviar el mensaje: {e}')
     return {"respuesta": respuesta}
+
+@agents_get_router.post("/preguntas")
+def obtener_preguntas(req: Request):
+    seccion = {} # req.session.get("seccion")
+    if not seccion:  # PARA TESTEAR
+        seccion = {}
+        # raise HTTPException(status_code=401, detail="Sección no especificada")
+
+    orq = FlowAgentePreguntas(seccion)
+    try:
+        preguntas = orq.generarPreguntas()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error al generar preguntas: {e}')
+    return {"preguntas": preguntas}
+    

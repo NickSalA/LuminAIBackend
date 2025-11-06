@@ -20,9 +20,23 @@ def crearAgente(
     )
     return agente
 
+def crearAgenteSinMemoria(
+    llm: ChatGoogleGenerativeAI, contexto: str, tools: list | None
+):
+    if tools is None:
+        tools = []
+    agente = create_agent(
+        model=llm, tools=tools, system_prompt=contexto,
+    )
+    return agente
+
 def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True):
+    payload = {"messages": [{"role": "user", "content": consulta}]}
+    if config is not None:
+        respuesta = agente.invoke(payload, config=config)
+    else:
+        respuesta = agente.invoke(payload)
     try:
-        respuesta = agente.invoke({"messages": [{"role": "user", "content": consulta}]}, config=config)
         if not verbose:
             return respuesta
         return respuesta["messages"][-1].content
