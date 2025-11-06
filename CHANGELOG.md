@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.1...v1.8.2) (2025-11-06)
+
+
+### Bug Fixes
+
+* Preguntas generadas en formato JSON y reestructuracion del prompt de AgentePregunta ([b961356](https://github.com/NickSalA/LuminAIBackend/commit/b96135674437e3b194bb33d2b84f6567d5855f0d))
+
 ## [1.8.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.0...v1.8.1) (2025-11-06)
 
 
