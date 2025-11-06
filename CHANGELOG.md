@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.7.1...v1.8.0) (2025-11-06)
+
+
+### Features
+
+* Implementar creación de agentes sin memoria y mejorar la gestión de sesiones en la API ([d24f59f](https://github.com/NickSalA/LuminAIBackend/commit/d24f59f3b7a24c544696bd00708094a1424f579b))
+
 ## [1.7.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.7.0...v1.7.1) (2025-11-06)
 
 
