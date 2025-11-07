@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.2...v1.8.3) (2025-11-07)
+
+
+### Bug Fixes
+
+* Actualización de las respuestas y formateo JSON para la calificacion para mayor claridad ([c553335](https://github.com/NickSalA/LuminAIBackend/commit/c55333557c4c32f2db6411ad8966060b8c4e4bae))
+
 ## [1.8.2](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.1...v1.8.2) (2025-11-06)
 
 
