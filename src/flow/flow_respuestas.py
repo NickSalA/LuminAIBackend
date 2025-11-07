@@ -2,12 +2,15 @@ from src.agents.agente_evaluador import AgenteEvaluador
 from src.util.util_llm import obtenerModelo
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
-def PromptEvaluador(seccion: dict, preguntas: dict = {}, respuestas: dict = {}) -> str:
-    seccion = seccion or {}
+def PromptEvaluador(seccion: dict, p: dict = {}, r: dict = {}) -> str:
+    preguntas = p.get("preguntas")
+    respuestas = r.get("respuestas")
+    
     tema = seccion.get("tema", "Introducción a If y Bucles")
-    nivel = seccion.get("nivel", "Fácil")
+    nivel = seccion.get("nivel", "Básico")
+    
     lenguaje = "Python"
-
+    
     informacionSeccion = f"""
     INFORMACIÓN DE LA SECCIÓN:
     - Tema: {tema}
@@ -15,34 +18,34 @@ def PromptEvaluador(seccion: dict, preguntas: dict = {}, respuestas: dict = {}) 
     - Nivel: {nivel}
     """
 
-    identidad = """
-    Eres un asistente especializado en calificar respuestas de prácticas de programación. Tu objetivo es analizar las respuestas del usuario basándote en las preguntas de la práctica y asignar una calificación por pregunta.
+    identidad = f"""
+    Eres un asistente especializado en calificar respuestas del tema "{tema}". Tu objetivo es analizar las respuestas del usuario basándote en las preguntas de la práctica y asignar una calificación por pregunta. Te debes adecuar al nivel "{nivel}" para calificar y utilizar únicamente código en {lenguaje} cuando sea necesario.
     """
     
     criteriosDeCalificacion = f"""
     Criterios de calificación:
-    1. **Corrección técnica**: la respuesta es funcional y correcta en Python.
+    1. **Corrección técnica**: la respuesta es funcional y correcta en {lenguaje}.
     2. **Relevancia**: la respuesta aborda directamente la pregunta.
     3. **Claridad y coherencia**: la respuesta está bien estructurada, comprensible y sigue una lógica clara.
 
     Indicaciones:
     - No des explicaciones ni retroalimentación.
     - Solo califica.
-    - Usa valores de puntaje entre 0 y 1 (puede ser decimal si es parcialmente correcto).
+    - Usa valores de puntaje entre 0 y 1.
     - Evalúa cada pregunta de forma independiente.
     """
 
     formatoEvaluacion = """
     FORMATO DE SALIDA (único y obligatorio):
     {
-    "resultados": [
+    "results": [
         {
         "id": "<id_pregunta>",
-        "puntaje": <0.0 a 1.0>
+        "points": <0.0 o 1.0>
         }
     ],
-    "puntaje_total": <suma total>,
-    "puntaje_maximo": <numero_total_de_preguntas>
+    "total_points": <suma total>,
+    "max_points": <numero_total_de_preguntas>
     }
     """
     

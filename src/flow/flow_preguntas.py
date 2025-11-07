@@ -19,13 +19,13 @@ def PromptEvaluador(seccion: dict) -> str:
 
     identidad = (
         f"""
-    Eres un asistente que crea prácticas de programación con 5 preguntas.
+    Eres un asistente que crea prácticas de programación con 5 preguntas a partir del tema "{tema}".
     Reglas:
     - TODO en español.
-    - Solo código y ejemplos en Python.
+    - Solo código y ejemplos en {lenguaje}.
     - Dificultad coherente con el nivel (básico/intermedio/avanzado).
     - EXACTAMENTE 5 preguntas por práctica.
-    - Usa únicamente estos tipos: seleccion_unica, respuesta_libre, arregla_codigo, completa_codigo.
+    - Usa únicamente estos tipos: unique_selection, free_answer, fix_code, complete_code.
     - Debe haber al menos 1 pregunta de cada tipo; la quinta puede ser cualquiera.
     - Sé claro y conciso en enunciados y explicaciones.
     """
@@ -33,14 +33,14 @@ def PromptEvaluador(seccion: dict) -> str:
 
     formatoTipos = """
     Requisitos por tipo:
-    1) seleccion_unica
-    - 4 opciones exactamente y 1 correcta (este es el único caso con respuesta única).
-    2) respuesta_libre
-    - No usa 'opciones'. Define criterios basados en palabras clave obligatorias/prohibidas, sinónimos, y una rúbrica breve.
-    3) arregla_codigo
-    - Incluye 'codigo_inicial' con errores específicos. Define pruebas de verificación (I/O) y/o reglas AST simples.
-    4) completa_codigo
-    - Incluye 'codigo_inicial' y 4 'opciones' fragmento. Permite múltiples órdenes/ensambles válidos mediante 'ordenes_validas' o reglas.
+    1) unique_selection
+    - 4 options exactamente y 1 correcta (este es el único caso con respuesta única).
+    2) free_answer
+    - No usa 'options'. Define criterios basados en palabras clave obligatorias/prohibidas, sinónimos, y una rúbrica breve.
+    3) fix_code
+    - Incluye 'initial_code' con errores específicos. Define pruebas de verificación (I/O) y/o reglas AST simples.
+    4) complete_code
+    - Incluye 'initial_code' y 4 'options' fragmento. Permite múltiples órdenes/ensambles válidos mediante 'ordenes_validas' o reglas.
     """
 
     formatoJSON = (r"""
@@ -50,21 +50,21 @@ def PromptEvaluador(seccion: dict) -> str:
     - No uses null ni arrays vacíos para campos opcionales: omite el campo si no aplica.
     - Campos:
         {
-            "preguntas": [
+            "preguntas":[
                 {
                     "id": "<id_unico>", // q1, q2, q3, q4, q5
-                    "tipo": "seleccion_unica" | "respuesta_libre" | "arregla_codigo" | "completa_codigo",
-                    "enunciado": "<texto conciso>",
-                    "codigo_inicial": "<string con \\n escapado si aplica>",
-                    "opciones": ["<op1>", "<op2>", "<op3>", "<op4>"] // solo si el tipo lo requiere
+                    "type": "unique_selection" | "free_answer" | "fix_code" | "complete_code",
+                    "description": "<texto conciso>",
+                    "initial_code": "<string con \\n escapado si aplica>",
+                    "options": ["<op1>", "<op2>", "<op3>", "<op4>"] // solo si el tipo lo requiere
                 }
             ]
         }
     - Validación:
         • EXACTAMENTE 5 preguntas.
         • Al menos 1 de cada tipo.
-        • 'respuesta_libre' y 'arregla_codigo' NO incluyen 'opciones'.
-        • 'completa_codigo' y 'seleccion_unica' SÍ incluyen 'opciones' (exactamente 4).
+        • 'free_answer' y 'fix_code' NO incluyen 'options'.
+        • 'complete_code' y 'unique_selection' SÍ incluyen 'options' (exactamente 4).
     """
     )
     
