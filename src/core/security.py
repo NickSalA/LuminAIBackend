@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # tokenUrl es dummy aquí
 
 # --- Funciones ---
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None): #data contiene la info que queremos guardar en el token
     """Crea un nuevo token JWT."""
     to_encode = data.copy()
     if expires_delta:
@@ -29,7 +29,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme)): #el depends indica que FastAPI debe extraer el token usando el esquema definido arriba
     """
     Dependencia para verificar el token JWT y obtener el ID de usuario.
     FastAPI ejecutará esto *antes* de tu función de ruta.
