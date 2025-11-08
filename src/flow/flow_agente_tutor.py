@@ -1,16 +1,16 @@
 from src.util.util_llm import obtenerModelo
 from src.agents.agente_tutor import AgenteTutor
 import uuid
-from langchain_core.prompts import ChatPromptTemplate
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
-
-def PromptSistema(user: dict):
+def PromptSistema(user: dict, seccion: dict) -> str:
     user = user or {}
-    nombre = user.get("nombre", "Usuario")
-    username = user.get("username", "usuario")
-    tema = user.get("tema", "Tema no especificado")
-    nivel = user.get("nivel", "Nivel no especificado")
-    lenguaje = user.get("lenguaje", "Lenguaje no especificado")
+    nombre = user.get("nombre", "Nick")
+    username = user.get("username", "Daminin")
+
+    seccion = seccion or {}
+    tema = seccion.get("tema", "Tema no especificado")
+    nivel = seccion.get("nivel", "Facil")
+    lenguaje = "Python"
 
     informacionUsuario = (
         f"""
@@ -98,34 +98,37 @@ def PromptSistema(user: dict):
         - Usa refuerzos positivos medidos (por ejemplo: "¡Buen avance, {nombre}!") para mantener la motivación.
     """
     )
+    
+    messages = (
+        identidadObjetivos,
+        informacionUsuario,
+        reglasCriticas,
+        privacidadVerificacion,
+        flujoTrabajo,
+        formatoRespuesta,
+        guiaRespuesta,
+        reglasComunicacion,
+    )
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", identidadObjetivos),
-        ("system", informacionUsuario),
-        ("system", reglasCriticas),
-        ("system", privacidadVerificacion),
-        ("system", flujoTrabajo),
-        ("system", formatoRespuesta),
-        ("system", guiaRespuesta),
-        ("system", reglasComunicacion),
-    ])
-
+    prompt = "\n".join(messages)    
+    
     return prompt
 
 class FlowAgenteTutor:
-    def __init__(self, user):
+    def __init__(self, user, seccion, saver):
         self.llm = obtenerModelo()
         self.user = user
-
+        self.seccion = seccion
         self.user["thread_id"] = self.user.get("thread_id") or (
-        f"usuario:{self.user.get('usuario_id')}-{uuid.uuid4().hex}"
+        f"usuario-{uuid.uuid4().hex}" # self.user.get("thread_id") or {f"usuario:{self.user.get('user_id')}-{uuid.uuid4().hex}"
         )
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
             user=self.user,
             tools = [BC_Tool()],
-            contexto=PromptSistema(self.user),
+            memoria= saver,
+            contexto=PromptSistema(self.user, self.seccion),
             thread=self.user["thread_id"],
             checkpoint_ns=f"tutor:{self.user.get('usuario_id')}",
         )

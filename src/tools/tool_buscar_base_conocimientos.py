@@ -1,5 +1,5 @@
 # Utilitario para crear tool de base de conocimientos
-from langchain.tools.retriever import create_retriever_tool
+from langchain_core.tools import create_retriever_tool
 
 # Manejo de herramientas y agentes
 from langchain_core.tools import Tool

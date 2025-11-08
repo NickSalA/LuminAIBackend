@@ -217,3 +217,7 @@ venv/
 # entornos de desarrollo
 .vscode/
 .idea/
+
+# pruebas
+.test.py
+test.py

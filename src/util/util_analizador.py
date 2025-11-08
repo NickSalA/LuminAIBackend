@@ -5,7 +5,7 @@ from azure.core.credentials import AzureKeyCredential
 # Helpers propios
 from src.util.util_credenciales import obtenerAPI
 
-nombre_servicio = "sopport-di" # CAMBIAR NOMBRE
+nombre_servicio = "dilumin" # CAMBIAR NOMBRE
 
 def conectarDocumentIntelligence():
     return DocumentAnalysisClient(
