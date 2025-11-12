@@ -18,3 +18,5 @@ psycopg[binary]
 python-jose[cryptography] # Para manejar JWTs
 passlib[bcrypt]
 starlette
+httpx
+google-auth-oauthlib

@@ -1,6 +1,6 @@
 # Utilitario para crear y ejecutar agentes
-from langchain.agents import create_agent
-
+#from langchain.agents import create_agent
+from langgraph.prebuilt import create_react_agent
 # Utilitario para el modelo de lenguaje
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -16,7 +16,7 @@ def crearAgente(
         tools = []
     if memoria is None:
         memoria = InMemorySaver()
-    agente = create_agent(
+    agente = create_react_agent(
         model=llm, tools=tools, checkpointer=memoria, system_prompt=contexto,
     )
     return agente
@@ -26,7 +26,7 @@ def crearAgenteSinMemoria(
 ):
     if tools is None:
         tools = []
-    agente = create_agent(
+    agente = create_react_agent(
         model=llm, tools=tools, system_prompt=contexto,
     )
     return agente

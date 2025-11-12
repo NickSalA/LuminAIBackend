@@ -6,12 +6,27 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer # Para extraer el token del header
 from jose import JWTError, jwt # Para crear y verificar JWTs
 from passlib.context import CryptContext
+from dotenv import load_dotenv
+import os
 
+
+load_dotenv()  # Carga las variables de entorno desde el archivo .env
 # --- Configuración ---
-# ¡ESTA CLAVE DEBE SER SECRETA Y MUY LARGA! Guárdala de forma segura (ej: en util_credenciales)
-SECRET_KEY = "LuminProyect" # ¡CAMBIAR ESTO!
-ALGORITHM = "HS256" # Algoritmo estándar para firmar
-ACCESS_TOKEN_EXPIRE_MINUTES = 500 # Cuánto tiempo dura la sesión
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 500 # El tiempo que dura tu sesión (ej: 8 horas)
+
+# --- 2. Configuración de GOOGLE (para que la use tu API de login) ---
+# Lee las credenciales de Google que pusiste en tu .env
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+
+# --- Validación de que todo cargó bien ---
+if not SECRET_KEY:
+    raise Exception("Error: JWT_SECRET_KEY no encontrada en .env. Inventa una clave larga y ponla ahí.")
+if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET or not GOOGLE_REDIRECT_URI:
+    raise Exception("Error: Faltan credenciales de Google (CLIENT_ID, CLIENT_SECRET o REDIRECT_URI) en .env.")
 
 # Esquema para que FastAPI sepa cómo buscar el token ("Bearer" token en el header Authorization)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # tokenUrl es dummy aquí
