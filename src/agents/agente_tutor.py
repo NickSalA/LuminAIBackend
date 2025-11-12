@@ -20,6 +20,7 @@ class AgenteTutor:
         self.tools = tools or []
         self.thread = thread
         self.checkpoint_ns = checkpoint_ns
+        
         self.user = user
         self.memoria = memoria
         self.agente = crearAgente(llm, contexto, self.tools, self.memoria)

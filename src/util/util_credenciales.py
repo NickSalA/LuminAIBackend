@@ -4,7 +4,7 @@ from azure.identity import DefaultAzureCredential
 # Manejo de secretos en Key Vault
 from azure.keyvault.secrets import SecretClient
 
-vault_name = "keylumin" # CAMBIAR NOMBRE
+vault_name = "keylumin"
 KVUri = f"https://{vault_name}.vault.azure.net"
 
 credential = DefaultAzureCredential()

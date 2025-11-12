@@ -7,6 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 # Manejo de memoria del agente
 from langgraph.checkpoint.memory import InMemorySaver
 
+# Manejo de JSON para respuestas estructuradas
 import json
 
 def crearAgente(
