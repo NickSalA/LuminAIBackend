@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.3...v1.8.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* Refactor variable names and improve code formatting for clarity ([58d1269](https://github.com/NickSalA/LuminAIBackend/commit/58d126945ea167243621667210fedcfab0c4174d))
+
 ## [1.8.3](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.2...v1.8.3) (2025-11-07)
 
 

@@ -52,10 +52,10 @@ def PromptEvaluador(seccion: dict) -> str:
         {
             "preguntas":[
                 {
-                    "id": "<id_unico>", // q1, q2, q3, q4, q5
-                    "type": "unique_selection" | "free_answer" | "fix_code" | "complete_code",
+                    "id": "<id_unico>", // 1, 2, 3, 4, 5
+                    "type": "SingleSelection" | "FreeResponse" | "FixTheCode" | "CompleteTheCode",
                     "description": "<texto conciso>",
-                    "initial_code": "<string con \\n escapado si aplica>",
+                    "codeLine": "<Texto en formato List<List<String>>>" // solo si la pregunta lo requiere>",
                     "options": ["<op1>", "<op2>", "<op3>", "<op4>"] // solo si el tipo lo requiere
                 }
             ]
