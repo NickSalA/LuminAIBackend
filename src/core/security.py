@@ -1,7 +1,7 @@
 # src/core/security.py
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer # Para extraer el token del header
 from jose import JWTError, jwt # Para crear y verificar JWTs
@@ -29,8 +29,8 @@ if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET or not GOOGLE_REDIRECT_URI:
     raise Exception("Error: Faltan credenciales de Google (CLIENT_ID, CLIENT_SECRET o REDIRECT_URI) en .env.")
 
 # Esquema para que FastAPI sepa cómo buscar el token ("Bearer" token en el header Authorization)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # tokenUrl es dummy aquí
-
+oauth2_scheme = HTTPBearer()
+#Devuelve un HTTPAuthorizationCredentials que contiene el esquema y credentials (el token)
 # --- Funciones ---
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None): #data contiene la info que queremos guardar en el token
@@ -44,10 +44,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None): 
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)): #el depends indica que FastAPI debe extraer el token usando el esquema definido arriba
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme) # <-- 2. Cambia 'token: str' por esto
+):
     """
     Dependencia para verificar el token JWT y obtener el ID de usuario.
-    FastAPI ejecutará esto *antes* de tu función de ruta.
+    ...
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,8 +57,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)): #el depends ind
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        # 3. Extrae el string del token desde el objeto 'credentials'
+        token_string = credentials.credentials 
+        
         # Decodifica el token usando la clave secreta
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token_string, SECRET_KEY, algorithms=[ALGORITHM]) # <-- 4. Usa el string
         
         # Extrae el ID de usuario (o lo que hayas guardado) del token
         user_id_str: str | None = payload.get("sub") # Usamos "sub" (subject) por convención
@@ -68,11 +73,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)): #el depends ind
             user_id = int(user_id_str)
         except ValueError:
              raise credentials_exception
-             
-        # (Opcional pero recomendado) Podrías buscar al usuario en la BD aquí
-        # user = session.get(Usuario, user_id)
-        # if user is None:
-        #     raise credentials_exception
             
         # Devuelve el ID del usuario autenticado
         return {"user_id": user_id} 

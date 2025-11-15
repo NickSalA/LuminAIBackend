@@ -12,6 +12,8 @@ from src.api.agents.agents_get import agents_get_router
 
 from src.api.usuarios_api import routerUsuarios
 
+from src.api.contenido_api import routerContenido
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     conn, saver = obtenerConexionCheckpointer() 
@@ -31,6 +33,11 @@ app = FastAPI(title="LuminAI API", lifespan=lifespan)
 
 app.include_router(agents_get_router, prefix="/agente", tags=["Agente"])
 app.include_router(routerUsuarios, tags=["Autentificacion"])
+app.include_router(
+    router=routerContenido,
+    prefix="/api",
+    tags=["Contenido"]
+)
 
 ALLOWED_ORIGINS = [
     "http://0.0.0.0:8000",
