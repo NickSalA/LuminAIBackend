@@ -2,36 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.util.util_checkpointer import obtenerConexionCheckpointer
-
-from contextlib import asynccontextmanager
-
 import uvicorn
 
-from src.api.agents.agents_get import agents_get_router
-
+from src.api.agents.agents_api import routerAgente
 from src.api.usuarios_api import routerUsuarios
-
 from src.api.contenido_api import routerContenido
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    conn, saver = obtenerConexionCheckpointer() 
-    app.state.conn = conn
-    app.state.checkpointer = saver
-    print("Checkpointer listo:", type(saver).__name__ if saver else None)
-    try:
-        yield
-    finally:
-        try:
-            if getattr(app.state, "conn", None) is not None:
-                app.state.conn.__exit__(None, None, None)  # #type: ignore
-        except Exception:
-            pass
+app = FastAPI(title="LuminAI API")
 
-app = FastAPI(title="LuminAI API", lifespan=lifespan)
-
-app.include_router(agents_get_router, prefix="/agente", tags=["Agente"])
+app.include_router(routerAgente, prefix="/agente", tags=["Agente"])
 app.include_router(routerUsuarios, tags=["Autentificacion"])
 app.include_router(
     router=routerContenido,
