@@ -12,5 +12,5 @@ class AgenteEvaluador:
         self.tools = tools or []
         self.agente = crearAgenteSinMemoria(llm, contexto, self.tools)
     
-    def responder(self, consulta: str = ""):
-        return ejecutarSinMemoria(self.agente, consulta)
+    async def responder(self, consulta: str = ""):
+        return await ejecutarSinMemoria(self.agente, consulta)

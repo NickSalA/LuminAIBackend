@@ -84,5 +84,5 @@ class FlowAgenteRespuestas:
             tools=[BC_Tool()],
         )
         
-    def evaluarRespuestas(self):
-        return self.AgenteEvaluador.responder("Evalúa las respuestas proporcionadas según las preguntas dadas y devuelve SOLO el JSON con los puntajes.")
+    async def evaluarRespuestas(self):
+        return await self.AgenteEvaluador.responder("Evalúa las respuestas proporcionadas según las preguntas dadas y devuelve SOLO el JSON con los puntajes.")

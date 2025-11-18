@@ -87,21 +87,17 @@ class FlowAgenteRetroalimentacion:
         self.seccion = seccion
         self.preguntas = preguntas
         self.respuestas = respuestas
-        self.user["thread_id"] = self.user.get("thread_id") or (
-            f"usuario-{uuid.uuid4().hex}" # self.user.get("thread_id") or {f"usuario:{self.user.get('user_id')}-{uuid.uuid4().hex}"
-        )
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
             user=self.user,
             tools = [BC_Tool()],
             contexto=PromptSistema(self.user, self.seccion, self.preguntas, self.respuestas),
-            thread=self.user["thread_id"],
-            checkpoint_ns=f"retroalimentacion:{self.user.get('usuario_id')}",
+            checkpoint_ns=f"luminretroalimentacion:{self.user.get('username')}",
         )
     
-    def darRetroalimentacion(self):
-        return self.AgenteTutor.responder("Dame una retroalimentación detallada de mi desempeño en la práctica, señalando mis aciertos y errores, y sugiriendo áreas de mejora. Sé específico y constructivo. Comienza con un saludo personalizado.")
+    async def darRetroalimentacion(self):
+        return await self.AgenteTutor.responder("Dame una retroalimentación detallada de mi desempeño en la práctica, señalando mis aciertos y errores, y sugiriendo áreas de mejora. Sé específico y constructivo. Comienza con un saludo personalizado.")
     
-    def responderMensaje(self, mensaje: str = ""):
-        return self.AgenteTutor.responder(mensaje)
+    async def responderMensaje(self, mensaje: str = "", thread_id: str = ""):
+        return await self.AgenteTutor.responder(mensaje, thread_id)

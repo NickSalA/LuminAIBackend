@@ -118,9 +118,6 @@ class FlowAgenteTutor:
         self.llm = obtenerModelo()
         self.user = user
         self.seccion = seccion
-        self.user["thread_id"] = self.user.get("thread_id") or (
-        f"usuario-{uuid.uuid4().hex}" # self.user.get("thread_id") or {f"usuario:{self.user.get('user_id')}-{uuid.uuid4().hex}"
-        )
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
@@ -128,12 +125,11 @@ class FlowAgenteTutor:
             tools = [BC_Tool()],
             memoria= saver,
             contexto=PromptSistema(self.user, self.seccion),
-            thread=self.user["thread_id"],
-            checkpoint_ns=f"tutor:{self.user.get('usuario_id')}",
+            checkpoint_ns=f"lumintutor-{self.user.get('username')}",
         )
         
-    def responderMensaje(self, mensaje: str = ""):
-        return self.AgenteTutor.responder(mensaje)
+    async def responderMensaje(self, mensaje: str = "", thread_id: str = ""):
+        return await self.AgenteTutor.responder(mensaje, thread_id)
     
     def reiniciarMemoria(self) -> str:
         return self.AgenteTutor.reiniciarMemoria()

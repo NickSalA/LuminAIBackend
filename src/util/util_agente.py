@@ -1,6 +1,6 @@
 # Utilitario para crear y ejecutar agentes
 #from langchain.agents import create_agent
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 # Utilitario para el modelo de lenguaje
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -15,10 +15,8 @@ def crearAgente(
 ):
     if tools is None:
         tools = []
-    if memoria is None:
-        memoria = InMemorySaver()
-    agente = create_react_agent(
-        model=llm, tools=tools, checkpointer=memoria, system_prompt=contexto,
+    agente = create_agent(
+        model=llm, tools=tools, checkpointer=memoria if memoria else InMemorySaver(), system_prompt=contexto,
     )
     return agente
 
@@ -27,15 +25,15 @@ def crearAgenteSinMemoria(
 ):
     if tools is None:
         tools = []
-    agente = create_react_agent(
+    agente = create_agent(
         model=llm, tools=tools, system_prompt=contexto,
     )
     return agente
 
-def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True):
+async def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True):
     payload = {"messages": [{"role": "user", "content": consulta}]}
     
-    respuesta = agente.invoke(payload, config=config)
+    respuesta = await agente.ainvoke(payload, config=config)
     try:
         if not verbose:
             return respuesta
@@ -43,14 +41,17 @@ def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True):
     except Exception as e:
         raise Exception(f'Error en la ejecución del agente: {e}')
 
-def ejecutarSinMemoria(agente, consulta: str = "", verbose: bool = True):
+async def ejecutarSinMemoria(agente, consulta: str = "", verbose: bool = True):
     payload = {"messages": [{"role": "user", "content": consulta}]}
     
-    respuesta = agente.invoke(payload)
+    respuesta = await agente.ainvoke(payload)
     try:
         if not verbose:
             return respuesta
-        respuesta = respuesta["messages"][-1].content.replace("```json", "").replace("```", "")
+        respuesta = respuesta["messages"][-1].content
         return json.loads(respuesta)
+    except json.JSONDecodeError as je:
+        raise Exception(f'Error al decodificar JSON: {je}')
     except Exception as e:
         raise Exception(f'Error en la ejecución del agente: {e}')
+    
