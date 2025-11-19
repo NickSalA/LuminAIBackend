@@ -4,7 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 import uvicorn
 
-from src.api.agents.agents_api import routerAgente
+from src.api.agents_api import routerAgente
 from src.api.usuarios_api import routerUsuarios
 from src.api.contenido_api import routerContenido
 
