@@ -1,4 +1,9 @@
+# Agente evaluador sin memoria, para feedback inmediato
+
+# Utilitario para el modelo de lenguaje
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Utilitarios para crear y ejecutar agentes sin memoria
 from src.util.util_agente import crearAgenteSinMemoria, ejecutarSinMemoria
 
 class AgenteEvaluador:
@@ -12,5 +17,5 @@ class AgenteEvaluador:
         self.tools = tools or []
         self.agente = crearAgenteSinMemoria(llm, contexto, self.tools)
     
-    def responder(self, consulta: str = ""):
-        return ejecutarSinMemoria(self.agente, consulta)
+    async def responder(self, consulta: str = ""):
+        return await ejecutarSinMemoria(self.agente, consulta)

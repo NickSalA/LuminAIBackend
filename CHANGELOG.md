@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.4...v1.9.0) (2025-11-17)
+
+
+### Features
+
+* Refactor agent API and remove deprecated routes; update schemas for improved data handling ([a16b7ed](https://github.com/NickSalA/LuminAIBackend/commit/a16b7ed397b3e76b3d15bb2992b36591b8033ade))
+
 ## [1.8.4](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.3...v1.8.4) (2025-11-12)
 
 
