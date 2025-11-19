@@ -39,7 +39,7 @@ class FullCourseResponse(BaseModel):
     pages: List[PageJson]
 
 
-@routerContenido.get("/contenido/estructura_completa_json", response_model=FullCourseResponse)
+@routerContenido.get("/content/complete_structure", response_model=FullCourseResponse)
 async def get_estructura_completa_del_curso_json(
     db : oracledb.Connection = Depends(get_connection),
     current_user : dict = Depends(get_current_user)

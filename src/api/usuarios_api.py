@@ -31,8 +31,19 @@ class GoogleAuthCode(BaseModel):
     code: str
 
 class TokenResponse(BaseModel):
-    access_token: str
+    token: str
     token_type: str = "bearer"
+    name : str
+    email : str
+    
+class UserMetrics(BaseModel):
+    currentLevelId : int | None
+    succededSectionsCount : int | None
+    currentPageId : int | None
+    averageScore : int | None
+    totalPracticesRetries : int | None
+    succededDailyPracticeCount : int | None
+    totalSectionsCount : int | None
 
 # --- Función auxiliar (igual que antes) ---
 async def fetch_google_data(url: str, access_token: str, client: httpx.AsyncClient):
@@ -140,6 +151,37 @@ async def google_auth(
     )
 
     # --- 6. Respuesta al Frontend ---
-    return TokenResponse(access_token=access_token_propio)
+    return TokenResponse(token=access_token_propio, name= p_google_name, email= p_email) #Esto va encriptado el JWT no lo esta
+#TODO agregar edad en la respuesta
 
 #TODO cambiar el uri del playground a la app cuando sea necesario 
+
+@routerUsuarios.get("/user/metrics", response_model=UserMetrics )
+async def fetch_user_metrichs(
+    db : oracledb.Connection = Depends(get_connection),
+    current_user : dict = Depends(get_current_user)
+) :
+    user_id = current_user.get("user_id")
+    
+    try :
+        with db.cursor() as cursor:
+            sql = "SELECT * FROM V_USER_DASHBOARD WHERE ID_USER = :user_id"
+            
+            cursor.execute(sql, user_id = user_id)
+            
+            row = cursor.fetchone()
+            
+            if not row : 
+                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
+            print(row)
+            return UserMetrics(
+                currentLevelId= row[2],
+                succededSectionsCount= row[5],
+                currentPageId=row[8],
+                averageScore= row[4],
+                totalPracticesRetries= row[7],
+                succededDailyPracticeCount= row[14],
+                totalSectionsCount= row[6]
+            )
+    except oracledb.DatabaseError as e:
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
