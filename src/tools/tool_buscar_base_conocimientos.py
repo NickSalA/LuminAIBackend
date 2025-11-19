@@ -9,8 +9,6 @@ from src.util.util_retriever import obtenerBaseDeConocimientos
 
 retriever = obtenerBaseDeConocimientos()
 
-
-
 def BC_Tool() -> Tool:
     return create_retriever_tool(
         retriever=retriever,

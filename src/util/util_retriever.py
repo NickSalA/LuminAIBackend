@@ -8,8 +8,8 @@ from azure.core.credentials import AzureKeyCredential
 # Helpers propios
 from src.util.util_credenciales import obtenerAPI
 
-nombre_servicio = "bclumin" # CAMBIAR NOMBRE
-nombre_index = "lumin_index" # CAMBIAR NOMBRE
+nombre_servicio = "bclumin" 
+nombre_index = "lumin_index"
 
 def obtenerBaseDeConocimientos() -> AzureAISearchRetriever:
     return AzureAISearchRetriever(

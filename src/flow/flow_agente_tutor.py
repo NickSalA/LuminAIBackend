@@ -1,7 +1,15 @@
-from src.util.util_llm import obtenerModelo
+# Flujo para el agente tutor personalizado por usuario
+
+# Importa el agente tutor
 from src.agents.agente_tutor import AgenteTutor
-import uuid
+
+# Importa el modelo de lenguaje
+from src.util.util_llm import obtenerModelo
+
+# Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
+
+# Importa el checkpointer para la memoria
 from src.util.util_checkpointer import saver
 
 def PromptSistema(user: dict, seccion: dict) -> str:

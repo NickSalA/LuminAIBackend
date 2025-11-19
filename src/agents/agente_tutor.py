@@ -1,8 +1,13 @@
+# Agente tutor con memoria, personalizado por usuario
+
+# Utilitario para el modelo de lenguaje
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Utilitarios para crear y ejecutar agentes
 from src.util.util_agente import crearAgente, ejecutar
 
+# Manejo de UUID para identificar sesiones de usuario
 import uuid
-from langgraph.checkpoint.memory import InMemorySaver
 
 class AgenteTutor:
     def __init__(self,
@@ -17,7 +22,6 @@ class AgenteTutor:
         self.contexto = contexto
         self.tools = tools or []
         self.checkpoint_ns = checkpoint_ns
-        
         self.user = user
         self.memoria = memoria
         self.agente = crearAgente(llm, contexto, self.tools, self.memoria)
@@ -32,5 +36,4 @@ class AgenteTutor:
 
     def reiniciarMemoria(self) -> str:
         thread = f"usuario:{self.user.get('username') or 'anon'}-{uuid.uuid4().hex}"
-
         return thread

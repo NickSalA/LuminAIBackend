@@ -1,5 +1,12 @@
+# Flujo para generar preguntas de práctica
+
+# Importa el agente evaluador
 from src.agents.agente_evaluador import AgenteEvaluador
+
+# Importa el modelo de lenguaje
 from src.util.util_llm import obtenerModelo
+
+# Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
 def PromptEvaluador(seccion: dict) -> str:
@@ -29,7 +36,6 @@ def PromptEvaluador(seccion: dict) -> str:
     - Sé claro y conciso en enunciados y explicaciones.
     """
     )
-
     formatoTipos = """
     Requisitos por tipo:
     1) SingleSelection
@@ -37,7 +43,6 @@ def PromptEvaluador(seccion: dict) -> str:
     - Enunciado con una sola respuesta correcta y opciones plausibles de longitud similar.
     - Evita pistas, ambigüedades y explicaciones dentro de las opciones.
     - No incluyas marcas de corrección en el JSON (solo las 4 opciones).
-
     2) FreeResponse
     - Campos: question, description.
     - En 'description' indica criterios de evaluación:
@@ -45,13 +50,11 @@ def PromptEvaluador(seccion: dict) -> str:
         • Elementos a evitar (si aplica).
         • Rúbrica breve (2–3 criterios).
     - Respuesta esperada corta y verificable.
-
     3) FixTheCode
     - Campos: question, description, wrongCode.
     - 'wrongCode' debe contener errores concretos (sintaxis, lógica, nombres, casos borde).
     - En 'description' define comportamiento esperado y, si aplica, 1–2 pruebas I/O simples (entrada → salida).
     - No agregues campos adicionales ni comentarios en el JSON.
-    
     4) CompleteTheCode
     - Incluye 'codeLines' con uno o más tokens 'MISSING' donde falta código.
     - Incluye 'missingTokens' con EXACTAMENTE 4 opciones de tokens/fragmentos para completar.
@@ -74,7 +77,6 @@ def PromptEvaluador(seccion: dict) -> str:
         { "tokens": [ { "token": "INDENT" }, { "token": "print" }, { "token": "(" }, { "token": "MISSING" }, { "token": ")" } ] }
     ]
     """
-
     formatoJSON = (r"""
     FORMATO JSON DE SALIDA (estricto):
     - Devuelve SOLO un objeto JSON válido (application/json).
@@ -109,7 +111,6 @@ def PromptEvaluador(seccion: dict) -> str:
         • Al menos 1 de cada tipo.
     """
     )
-    
     instrucciones = """
     Genera la práctica ahora para el tema y nivel dados.
     Responde SOLO con el objeto JSON válido siguiendo el formato anterior.

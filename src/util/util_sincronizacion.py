@@ -1,3 +1,4 @@
+# Utilitarios para sincronización de documentos con Azure Cognitive Search
 import os
 import hashlib
 from datetime import datetime, timezone

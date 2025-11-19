@@ -1,8 +1,12 @@
+# Esquemas de datos para utilitarios y agentes
+
+# Utilitario para modelos de datos
 from pydantic import BaseModel, Field
+
+# Utilitarios para datos opcionales
 from typing import Optional
 
 # Modelos para recibir la información
-
 class chatTutorRequest(BaseModel):
     contextData: dict = Field (..., description="Datos de contexto adicionales para el agente.")
     userData: dict = Field (..., description="Datos del usuario para el agente.")

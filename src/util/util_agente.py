@@ -1,6 +1,6 @@
 # Utilitario para crear y ejecutar agentes
-#from langchain.agents import create_agent
 from langchain.agents import create_agent
+
 # Utilitario para el modelo de lenguaje
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -48,7 +48,7 @@ async def ejecutarSinMemoria(agente, consulta: str = "", verbose: bool = True):
     try:
         if not verbose:
             return respuesta
-        respuesta = respuesta["messages"][-1].content
+        respuesta = respuesta["messages"][-1].content.replace("```json", "").replace("```", "")
         return json.loads(respuesta)
     except json.JSONDecodeError as je:
         raise Exception(f'Error al decodificar JSON: {je}')
