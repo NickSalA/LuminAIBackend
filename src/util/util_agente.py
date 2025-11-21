@@ -48,7 +48,10 @@ async def ejecutarSinMemoria(agente, consulta: str = "", verbose: bool = True):
     try:
         if not verbose:
             return respuesta
-        respuesta = respuesta["messages"][-1].content.replace("```json", "").replace("```", "")
+        respuesta = respuesta["messages"][-1].content
+        respuesta = respuesta[0].get("text", "").replace("```json", "").replace("```", "")
+        if not respuesta:
+            respuesta = str(respuesta)
         return json.loads(respuesta)
     except json.JSONDecodeError as je:
         raise Exception(f'Error al decodificar JSON: {je}')
