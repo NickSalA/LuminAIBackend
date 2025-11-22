@@ -221,3 +221,5 @@ venv/
 # pruebas
 .test.py
 test.py
+
+wallet

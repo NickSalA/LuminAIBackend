@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+azure-identity = "*"
+azure-keyvault-secrets = "*"
+pydantic = "*"
+langchain = "*"
+langchain-community = "*"
+langchain-openai = "*"
+azure-search-documents = "*"
+azure-ai-formrecognizer = "*"
+langgraph = "*"
+fastapi = "*"
+uvicorn = "*"
+langchain-core = "*"
+itsdangerous = "*"
+sqlalchemy = "*"
+oracledb = "*"
+sqlmodel = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+starlette = "*"
+httpx = "*"
+google-auth-oauthlib = "*"
+langchain-google-genai = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

@@ -9,6 +9,7 @@ azure-ai-formrecognizer
 langgraph
 fastapi
 uvicorn
+langchain_core
 itsdangerous
 sqlalchemy
 oracledb
@@ -18,3 +19,4 @@ passlib[bcrypt]
 starlette
 httpx
 google-auth-oauthlib
+langchain_google_genai
