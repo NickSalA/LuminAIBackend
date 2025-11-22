@@ -4,6 +4,7 @@ import oracledb
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import asyncio
+from datetime import datetime
 
 # --- ¡NUEVAS IMPORTACIONES DE GOOGLE! ---
 from google_auth_oauthlib.flow import Flow
@@ -44,6 +45,22 @@ class UserMetrics(BaseModel):
     totalPracticesRetries : int | None
     succededDailyPracticeCount : int | None
     totalSectionsCount : int | None
+
+class UserDataPost(BaseModel):
+    username : str | None
+    isPremium : bool | None
+    
+class UserDataGet(BaseModel):
+    id : int
+    username : str | None
+    isPremium : bool | None
+    #userIcon : int 
+    email : str
+    age : int | None
+    lives : int | None
+    date_new_life : datetime | None
+    isPremium : bool
+
 
 # --- Función auxiliar (igual que antes) ---
 async def fetch_google_data(url: str, access_token: str, client: httpx.AsyncClient):
@@ -173,7 +190,7 @@ async def fetch_user_metrichs(
             
             if not row : 
                 raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
-            print(row)
+            #print(row)
             return UserMetrics(
                 currentLevelId= row[2],
                 succededSectionsCount= row[5],
@@ -184,4 +201,52 @@ async def fetch_user_metrichs(
                 totalSectionsCount= row[6]
             )
     except oracledb.DatabaseError as e:
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+    
+@routerUsuarios.get("/user/data", response_model=UserDataGet)
+async def get_user_data(
+    
+    bd : oracledb.Connection = Depends(get_connection),
+    current_user : dict = Depends(get_current_user)
+) :
+    user_id = current_user.get("user_id")
+     
+    try :
+        with bd.cursor() as cursor : 
+            sql = """
+            SELECT * FROM V_USER_ACCOUNT_INFO WHERE ID_USER = :user_id
+            """
+            cursor.execute(sql, user_id = user_id)
+            
+            row = cursor.fetchone()
+            if not row : 
+                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
+            #print(row)
+            
+            vidas_out = cursor.var(oracledb.NUMBER)
+            date_life = cursor.var(oracledb.DATETIME)
+            
+            cursor.callproc(
+                "PKG_ACCOUNT.GET_LIVES_STATUS",
+                [user_id, vidas_out, date_life]
+            )
+            
+            membership = cursor.callfunc(
+                "PKG_SUBSCRIPTION.IS_ACTIVE",
+                oracledb.STRING,
+                [user_id]
+            )
+            
+            return UserDataGet(
+                id = user_id,
+                username=row[2],
+                isPremium= True if membership == 'S' else False ,
+                email= row[1],
+                age= 2025 - row[5].year if row[5] else None,
+                lives = vidas_out.getvalue(),
+                date_new_life= date_life.getvalue()
+            )
+            
+        
+    except oracledb.DatabaseError as e: 
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
