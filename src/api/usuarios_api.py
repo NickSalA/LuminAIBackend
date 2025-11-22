@@ -47,8 +47,10 @@ class UserMetrics(BaseModel):
     totalSectionsCount : int | None
 
 class UserDataPost(BaseModel):
-    username : str | None
-    isPremium : bool | None
+    id_plan : int
+    
+class SubscriptionResponse(BaseModel):
+    message: str    
     
 class UserDataGet(BaseModel):
     id : int
@@ -61,6 +63,13 @@ class UserDataGet(BaseModel):
     date_new_life : datetime | None
     isPremium : bool
 
+class LastPageResponse(BaseModel):
+    id_page : int
+    id_section : int
+    id_level : int
+    
+class LastPageRequest(BaseModel):
+    id_page: int
 
 # --- Función auxiliar (igual que antes) ---
 async def fetch_google_data(url: str, access_token: str, client: httpx.AsyncClient):
@@ -250,3 +259,70 @@ async def get_user_data(
         
     except oracledb.DatabaseError as e: 
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+
+
+@routerUsuarios.post("/users/subscription", response_model=SubscriptionResponse) 
+async def register_user_subscription(
+    data: UserDataPost,
+    db: oracledb.Connection = Depends(get_connection),
+    current_user: dict = Depends(get_current_user)
+):
+    user_id = current_user.get("user_id")
+    
+    try:
+        with db.cursor() as cursor:
+            # Llamada al procedimiento
+            cursor.callproc("PKG_SUBSCRIPTION.REGISTER_SUBSCRIPTION", [user_id, data.id_plan])
+        
+        # 2. ¡IMPORTANTE! Guardar los cambios
+        db.commit()
+        
+        # 3. Devolver un mensaje JSON claro
+        return {"message": "Suscripción registrada exitosamente"}
+        
+    except oracledb.DatabaseError as e:
+        # 4. Rollback en caso de error para limpiar la transacción
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error interno: {e}")
+    
+#TODO post last page
+
+@routerUsuarios.post("/user/set_last_page", response_model=LastPageResponse )
+async def register_last_page (
+    data : LastPageRequest,
+    db : oracledb.Connection = Depends(get_connection),
+    user_data : dict = Depends(get_current_user)
+    
+) : 
+    
+    id_user = user_data.get("user_id")
+    try :
+        with db.cursor() as cursor :
+            cursor.callproc("PKG_ACCOUNT.SET_LAST_PAGE", [id_user, data.id_page])
+            
+            db.commit()
+            
+            sql = "SELECT * FROM V_USER_DASHBOARD WHERE ID_USER = :user_id"
+            
+            cursor.execute(sql, user_id = id_user)
+            
+            row = cursor.fetchone()
+            
+            
+            
+            if not row : 
+                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
+            #print(row)
+            return LastPageResponse(
+                id_level = row[2],
+                id_section = cursor.callfunc("PKG_CONTENT.SECTION_OF_PAGE",oracledb.NUMBER,[row[8]] ),
+                id_page =row[8],
+                
+            )
+        
+    except oracledb.DatabaseError as e :
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+    
