@@ -92,7 +92,6 @@ class FlowAgenteRetroalimentacion:
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
-            user=self.user,
             tools = [BC_Tool()],
             contexto=PromptSistema(self.user, self.seccion, self.preguntas, self.respuestas),
             checkpoint_ns=f"luminretroalimentacion:{self.user.get('username')}",

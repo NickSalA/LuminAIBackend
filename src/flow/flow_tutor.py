@@ -129,7 +129,6 @@ class FlowAgenteTutor:
         
         self.AgenteTutor = AgenteTutor(
             llm=self.llm,
-            user=self.user,
             tools = [BC_Tool()],
             memoria= saver,
             contexto=PromptSistema(self.user, self.seccion),

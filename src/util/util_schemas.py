@@ -20,6 +20,9 @@ class chatRetroalimentacionRequest(BaseModel):
 class preguntasRequest(BaseModel):
     contextData: dict = Field (..., description="Datos de contexto adicionales para el agente.")
 
+class preguntasDiariasRequest(BaseModel):
+    contextData: list[str] = Field (..., description="Lista de temas para generar preguntas diarias.")
+    
 class respuestasRequest(BaseModel):
     questions: dict = Field (..., description="Preguntas realizadas por el agente.")
     answers: dict = Field (..., description="Respuestas proporcionadas por el usuario.")

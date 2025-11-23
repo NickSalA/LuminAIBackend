@@ -12,7 +12,6 @@ import uuid
 class AgenteTutor:
     def __init__(self,
         llm: ChatGoogleGenerativeAI,
-        user: dict,
         contexto: str,
         checkpoint_ns: str = "lumin-tutor",
         tools: list | None = None,
@@ -22,7 +21,6 @@ class AgenteTutor:
         self.contexto = contexto
         self.tools = tools or []
         self.checkpoint_ns = checkpoint_ns
-        self.user = user
         self.memoria = memoria
         self.agente = crearAgente(llm, contexto, self.tools, self.memoria)
     
@@ -35,5 +33,5 @@ class AgenteTutor:
             })
 
     def reiniciarMemoria(self) -> str:
-        thread = f"usuario:{self.user.get('username') or 'anon'}-{uuid.uuid4().hex}"
+        thread = f"usuario:{'anon'}-{uuid.uuid4().hex}"
         return thread
