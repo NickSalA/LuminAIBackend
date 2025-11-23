@@ -28,7 +28,6 @@ class SectionJson(BaseModel):
     
 class PageJson(BaseModel):
     id_page: int
-    name: str
     page_order: int
     content_md: str
     id_section : int
@@ -71,9 +70,8 @@ async def get_estructura_completa_del_curso_json(
             for row in page_refcursor :
                 page = PageJson(
                         id_page= row[0],
-                        name= row[3],
-                        page_order=row[4],
-                        content_md=row[5] if row[5] else "",
+                        page_order=row[3],
+                        content_md=row[4] if row[4] else "",
                         id_section=row[2]
                     )
                 
