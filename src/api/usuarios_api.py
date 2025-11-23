@@ -38,13 +38,14 @@ class TokenResponse(BaseModel):
     email : str
     
 class UserMetrics(BaseModel):
-    currentLevelId : int | None
-    succededSectionsCount : int | None
-    currentPageId : int | None
-    averageScore : int | None
-    totalPracticesRetries : int | None
-    succededDailyPracticeCount : int | None
-    totalSectionsCount : int | None
+    currentLevelId: int | None
+    succededSectionsCount: int | None
+    currentSectionId: int | None
+    currentPageId: int | None
+    averageScore: float | None
+    totalPracticeRetries: int | None
+    succededDailyPracticeCount: int | None
+    totalSectionsCount: int | None
 
 class UserDataPost(BaseModel):
     id_plan : int
@@ -53,15 +54,14 @@ class SubscriptionResponse(BaseModel):
     message: str    
     
 class UserDataGet(BaseModel):
-    id : int
-    username : str | None
-    isPremium : bool | None
-    #userIcon : int 
-    email : str
-    age : int | None
-    lives : int | None
-    date_new_life : datetime | None
-    isPremium : bool
+    id: int
+    username: str | None
+    #userIcon: int
+    email: str
+    age: int | None
+    lives: int | None
+    newLife: datetime | None
+    isPremium: bool
 
 class LastPageResponse(BaseModel):
     id_page : int
@@ -182,82 +182,91 @@ async def google_auth(
 
 #TODO cambiar el uri del playground a la app cuando sea necesario 
 
-@routerUsuarios.get("/user/metrics", response_model=UserMetrics )
+@routerUsuarios.get("/user/metrics", response_model=UserMetrics)
 async def fetch_user_metrichs(
-    db : oracledb.Connection = Depends(get_connection),
-    current_user : dict = Depends(get_current_user)
-) :
+
+        db: oracledb.Connection = Depends(get_connection),
+        current_user: dict = Depends(get_current_user)
+):
     user_id = current_user.get("user_id")
-    
-    try :
+
+    try:
         with db.cursor() as cursor:
-            sql = "SELECT * FROM V_USER_DASHBOARD WHERE ID_USER = :user_id"
-            
-            cursor.execute(sql, user_id = user_id)
-            
+            # 1. Obtener datos del Dashboard
+            sql = "SELECT * FROM V_USER_DASHBOARD WHERE ID_USER = :1"
+            cursor.execute(sql, [user_id])
             row = cursor.fetchone()
-            
-            if not row : 
-                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
-            #print(row)
+
+            if not row:
+                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados.")
+
+            current_page_id = row[8]
+
+            current_section_id = 0
+            if current_page_id:
+                current_section_id = cursor.callfunc(
+                    "PKG_CONTENT.SECTION_OF_PAGE",
+                    oracledb.NUMBER,
+                    [current_page_id]
+                )
+
             return UserMetrics(
-                currentLevelId= row[2],
-                succededSectionsCount= row[5],
-                currentPageId=row[8],
-                averageScore= row[4],
-                totalPracticesRetries= row[7],
-                succededDailyPracticeCount= row[14],
-                totalSectionsCount= row[6]
+                currentLevelId=row[2],
+                succededSectionsCount=row[5],
+                currentSectionId=current_section_id,
+                currentPageId=current_page_id,
+                averageScore=float(row[4]) if row[4] is not None else 0.0,
+                totalPracticeRetries=row[7],
+                succededDailyPracticeCount=row[13],
+                totalSectionsCount=row[6]
             )
+
     except oracledb.DatabaseError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
-    
+
+
 @routerUsuarios.get("/user/data", response_model=UserDataGet)
 async def get_user_data(
-    
-    bd : oracledb.Connection = Depends(get_connection),
-    current_user : dict = Depends(get_current_user)
-) :
+        bd: oracledb.Connection = Depends(get_connection),
+        current_user: dict = Depends(get_current_user)
+):
     user_id = current_user.get("user_id")
-     
-    try :
-        with bd.cursor() as cursor : 
-            sql = """
-            SELECT * FROM V_USER_ACCOUNT_INFO WHERE ID_USER = :user_id
-            """
-            cursor.execute(sql, user_id = user_id)
-            
+
+    try:
+        with bd.cursor() as cursor:
+            sql = "SELECT * FROM V_USER_ACCOUNT_INFO WHERE ID_USER = :1"
+            cursor.execute(sql, [user_id])
+
             row = cursor.fetchone()
-            if not row : 
-                raise HTTPException(status_code=404, detail="Datos de dashboard no encontrados para el usuario.")
-            #print(row)
-            
+            if not row:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
             vidas_out = cursor.var(oracledb.NUMBER)
             date_life = cursor.var(oracledb.DATETIME)
-            
+
             cursor.callproc(
                 "PKG_ACCOUNT.GET_LIVES_STATUS",
                 [user_id, vidas_out, date_life]
             )
-            
+
             membership = cursor.callfunc(
                 "PKG_SUBSCRIPTION.IS_ACTIVE",
                 oracledb.STRING,
                 [user_id]
             )
-            
+
             return UserDataGet(
-                id = user_id,
+                id=user_id,
                 username=row[2],
-                isPremium= True if membership == 'S' else False ,
-                email= row[1],
-                age= 2025 - row[5].year if row[5] else None,
-                lives = vidas_out.getvalue(),
-                date_new_life= date_life.getvalue()
+                #userIcon=2131230810,
+                email=row[1],
+                age=2025 - row[5].year if row[5] else None,
+                lives=int(vidas_out.getvalue()) if vidas_out.getvalue() is not None else 5,
+                newLife=date_life.getvalue(),
+                isPremium=(membership == 'S')
             )
-            
-        
-    except oracledb.DatabaseError as e: 
+
+    except oracledb.DatabaseError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
 
 
