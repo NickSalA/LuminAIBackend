@@ -4,7 +4,7 @@
 from pydantic import BaseModel, Field
 
 # Utilitarios para datos opcionales
-from typing import Optional
+from typing import Optional, Dict, Any
 
 # Modelos para recibir la información
 class chatTutorRequest(BaseModel):
@@ -26,6 +26,7 @@ class preguntasDiariasRequest(BaseModel):
 class respuestasRequest(BaseModel):
     questions: dict = Field (..., description="Preguntas realizadas por el agente.")
     answers: dict = Field (..., description="Respuestas proporcionadas por el usuario.")
+    userData: Optional[Dict[str, Any]] = Field(default=None, description="Datos del usuario o contexto (ej: sectionId).")
 
 # Modelos para las solicitudes de chat
 
@@ -44,3 +45,34 @@ class QuestionResultsJson(BaseModel):
     questionsResults: list[bool] = Field (..., description="Lista de resultados por pregunta.")
     resultType: str = Field (..., description="Tipo de resultado: APPROVED, DISAPPROVED, FULLYAPPROVED.")
     score: int = Field (..., description="Puntaje total obtenido.")
+
+class CalificationJson(BaseModel):
+    sectionId: int
+    score: int
+    retries: int
+    passed: bool
+
+# Modelo para las métricas que se devuelven al finalizar
+class UserMetrics(BaseModel):
+    currentLevelId : int | None
+    succededSectionsCount : int | None
+    currentPageId : int | None
+    averageScore : float | None
+    totalPracticesRetries : int | None
+    succededDailyPracticeCount : int | None
+    totalSectionsCount : int | None
+
+# Respuesta completa para /practiceResults
+class PracticeResultsResponse(BaseModel):
+    questionsResults: list[bool]
+    resultType: str
+    score: int
+    userMetrics: UserMetrics
+    calification: CalificationJson
+
+# Respuesta completa para /dailyPracticeResults
+class DailyPracticeResultsResponse(BaseModel):
+    questionsResults: list[bool]
+    resultType: str
+    score: int
+    succededDailyPracticeCount: int
