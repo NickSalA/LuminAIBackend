@@ -20,7 +20,7 @@ from src.core.security import (
     GOOGLE_CLIENT_SECRET, 
     GOOGLE_REDIRECT_URI
 )
-from src.util.util_schemas import (UserMetrics)
+from src.util.util_schemas import (UserMetrics, CalificationJson)
 
 # Constantes (igual que antes)
 AGE_URL = "https://people.googleapis.com/v1/people/me?personFields=birthdays"
@@ -325,4 +325,50 @@ async def register_last_page (
         
     except oracledb.DatabaseError as e :
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+
+@routerUsuarios.get("/user/qualifications", response_model=list[CalificationJson])
+async def get_user_qualifications(
+        user_id: int,
+        db: oracledb.Connection = Depends(get_connection),
+        #current_user: dict = Depends(get_current_user)
+):
+    #user_id = current_user["user_id"]
+    qualifications = []
+
+    try:
+        with db.cursor() as cursor:
+            sql = """
+                  SELECT usp.ID_SECTION, \
+                         usp.ATTEMPTS, \
+                         usp.STATUS, \
+                         (SELECT MAX(SCORE) \
+                          FROM PRACTICE_ATTEMPT pa \
+                          WHERE pa.ID_USER = usp.ID_USER \
+                            AND pa.ID_SECTION = usp.ID_SECTION \
+                            AND pa.STATUS = 'FINISHED') as MAX_SCORE
+                  FROM USER_SECTION_PROGRESS usp
+                  WHERE usp.ID_USER = :1
+                  ORDER BY usp.ID_SECTION ASC \
+                  """
+            cursor.execute(sql, [user_id])
+            rows = cursor.fetchall()
+
+            for row in rows:
+
+                status_sec = row[2]
+                passed = status_sec in ('SUPERADO', 'PERFECTO')
+
+                max_score = row[3] if row[3] is not None else 0
+
+                qualifications.append(CalificationJson(
+                    sectionId=row[0],
+                    score=max_score,
+                    retries=row[1],
+                    passed=passed
+                ))
+
+    except oracledb.DatabaseError as e:
+        raise HTTPException(status_code=500, detail=f"Error de base de datos al obtener calificaciones: {e}")
+
+    return qualifications
     
