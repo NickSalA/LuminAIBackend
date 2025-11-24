@@ -54,13 +54,14 @@ class CalificationJson(BaseModel):
 
 # Modelo para las métricas que se devuelven al finalizar
 class UserMetrics(BaseModel):
-    currentLevelId : int | None
-    succededSectionsCount : int | None
-    currentPageId : int | None
-    averageScore : float | None
-    totalPracticesRetries : int | None
-    succededDailyPracticeCount : int | None
-    totalSectionsCount : int | None
+    currentLevelId: int | None
+    succededSectionsCount: int | None
+    currentSectionId: int | None
+    currentPageId: int | None
+    averageScore: float | None
+    totalPracticeRetries: int | None
+    succededDailyPracticeCount: int | None
+    totalSectionsCount: int | None
 
 # Respuesta completa para /practiceResults
 class PracticeResultsResponse(BaseModel):

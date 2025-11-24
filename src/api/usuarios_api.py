@@ -20,6 +20,7 @@ from src.core.security import (
     GOOGLE_CLIENT_SECRET, 
     GOOGLE_REDIRECT_URI
 )
+from src.util.util_schemas import (UserMetrics)
 
 # Constantes (igual que antes)
 AGE_URL = "https://people.googleapis.com/v1/people/me?personFields=birthdays"
@@ -36,16 +37,6 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     name : str
     email : str
-    
-class UserMetrics(BaseModel):
-    currentLevelId: int | None
-    succededSectionsCount: int | None
-    currentSectionId: int | None
-    currentPageId: int | None
-    averageScore: float | None
-    totalPracticeRetries: int | None
-    succededDailyPracticeCount: int | None
-    totalSectionsCount: int | None
 
 class UserDataPost(BaseModel):
     id_plan : int

@@ -1,48 +1,40 @@
-# Rutas API para agentes
-
-# Utilitario para FastAPI
+import httpx
+import oracledb
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+from typing import Optional
+import uuid
 
-# Importa los flujos de agentes
 from src.flow.flow_tutor import FlowAgenteTutor
 from src.flow.flow_preguntas_diarias import FlowAgentePreguntasDiarias
 from src.flow.flow_preguntas_practica import FlowAgentePreguntas
 from src.flow.flow_respuestas import FlowAgenteRespuestas
 from src.flow.flow_retroalimentacion import FlowAgenteRetroalimentacion
 
-# Importa los esquemas de datos para las respuestas
-from src.util.util_schemas import QuestionResultsJson, AgentMessageJson
-
-# Importa los esquemas específicos para las solicitudes
 from src.util.util_schemas import (QuestionResultsJson, AgentMessageJson, ChatIn,respuestasRequest, chatTutorRequest, chatRetroalimentacionRequest,preguntasRequest, preguntasDiariasRequest,PracticeResultsResponse, DailyPracticeResultsResponse,UserMetrics, CalificationJson)
 
-# Importaciones de Seguridad y DB
 from src.db.session import get_connection
 from src.core.security import get_current_user
 
-# Utilitarios para datos opcionales
-from typing import Optional
-import uuid
-import oracledb
 routerAgente = APIRouter()
 
-@routerAgente.post("/tutor", response_model= AgentMessageJson)
-async def obtener_tutor(req:chatTutorRequest, body: ChatIn):
-  user = req.userData or {}
-  seccion = req.contextData or {}
-  
-  orq = FlowAgenteTutor(user, seccion)
-  thread = body.thread_id
-  
-  if not thread:
-    thread = orq.reiniciarMemoria()
-  
-  try:
-      respuesta = await orq.responderMensaje(body.mensaje, thread)
-  except Exception as e:
-      raise HTTPException(status_code=500, detail=f'Error al enviar el mensaje: {e}')
-    
-  return AgentMessageJson(text=respuesta, thread_id=thread)
+@routerAgente.post("/tutor", response_model=AgentMessageJson)
+async def obtener_tutor(req: chatTutorRequest, body: ChatIn):
+    user = req.userData or {}
+    seccion = req.contextData or {}
+
+    orq = FlowAgenteTutor(user, seccion)
+    thread = body.thread_id
+
+    if not thread:
+        thread = orq.reiniciarMemoria()
+
+    try:
+        respuesta = await orq.responderMensaje(body.mensaje, thread)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error al enviar el mensaje: {e}')
+
+    return AgentMessageJson(text=respuesta, thread_id=thread)
 
 
 @routerAgente.post("/practice")
@@ -58,7 +50,6 @@ async def obtener_preguntas(
     if id_section:
         try:
             with db.cursor() as cursor:
-                # ESTO RESTA 1 VIDA Y CREA UN INTENTO "IN_PROGRESS"
                 cursor.callfunc("PKG_PROGRESS.START_ATTEMPT", oracledb.NUMBER, [user_id, id_section])
                 db.commit()
         except oracledb.DatabaseError as e:
@@ -151,7 +142,6 @@ async def obtener_respuestas(
     score_obtenido = evaluacion.get("score", 0)
 
     id_section = None
-
     if getattr(req, "userData", None):
         id_section = req.userData.get("sectionId") or req.userData.get("id_section")
 
@@ -165,17 +155,34 @@ async def obtener_respuestas(
     try:
         with db.cursor() as cursor:
             cursor.callproc("PKG_PROGRESS.FINISH_ATTEMPT", [user_id, id_section, score_obtenido])
+
+            # Recuperar métricas
             cursor.execute("SELECT * FROM V_USER_DASHBOARD WHERE ID_USER = :1", [user_id])
             row = cursor.fetchone()
 
+            # Calcular currentSectionId
+            current_page_id = row[8] if row else None
+            current_section_user_id = 0
+
+            if current_page_id:
+                current_section_user_id = cursor.callfunc(
+                    "PKG_CONTENT.SECTION_OF_PAGE",
+                    oracledb.NUMBER,
+                    [current_page_id]
+                )
+
             user_metrics = UserMetrics(
                 currentLevelId=row[2],
-                averageScore=row[4],
+                averageScore=float(row[4]) if row[4] is not None else 0.0,
                 succededSectionsCount=row[5],
                 totalSectionsCount=row[6],
-                totalPracticesRetries=row[7],
-                currentPageId=row[8],
-                succededDailyPracticeCount=row[14]
+
+                # Nombres y campos corregidos:
+                totalPracticeRetries=row[7],  # Sin 's'
+                currentPageId=current_page_id,
+                currentSectionId=current_section_user_id,  # Campo nuevo agregado
+
+                succededDailyPracticeCount=row[13]  # Índice 13
             ) if row else None
 
             cursor.execute("""
@@ -202,7 +209,6 @@ async def obtener_respuestas(
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error guardando progreso: {e}")
 
-    # 3. Retornar respuesta combinada
     return PracticeResultsResponse(
         questionsResults=evaluacion["questionsResults"],
         resultType=evaluacion["resultType"],
@@ -210,7 +216,6 @@ async def obtener_respuestas(
         userMetrics=user_metrics,
         calification=calification
     )
-
 
 @routerAgente.post("/dailyPracticeResults", response_model=DailyPracticeResultsResponse)
 async def obtener_respuestas_diarias(
@@ -233,10 +238,8 @@ async def obtener_respuestas_diarias(
     # 2. Guardar en BD
     try:
         with db.cursor() as cursor:
-            # Esto actualiza LAST_DAILY_ATTEMPT_AT y suma victorias si did_win es True
             cursor.callproc("PKG_PROGRESS.FINISH_DAILY_CHALLENGE", [user_id, did_win])
 
-            # Obtener contador actualizado
             cursor.execute("SELECT DAILY_CHALLENGE_WINS FROM USER_ACCOUNT WHERE ID_USER = :1", [user_id])
             res = cursor.fetchone()
             wins = res[0] if res else 0
@@ -253,33 +256,35 @@ async def obtener_respuestas_diarias(
         succededDailyPracticeCount=wins
     )
 
-@routerAgente.post("/feedback", response_model = AgentMessageJson)
+
+@routerAgente.post("/feedback", response_model=AgentMessageJson)
 async def obtener_retroalimentacion(req: chatRetroalimentacionRequest, body: Optional[ChatIn] = None):
-  user =  req.userData
-  seccion = req.contextData
-  questions = req.questions
-  answers = req.answers
+    user = req.userData
+    seccion = req.contextData
+    questions = req.questions
+    answers = req.answers
 
-  orq = FlowAgenteRetroalimentacion(user, seccion, questions, answers)
-  thread = body.thread_id if body else None
-  
-  if not thread:
-    thread = orq.reiniciarMemoria()
-    try:
-      feedback = await orq.darRetroalimentacion(thread)
-    except Exception as e:
-      raise HTTPException(status_code=500, detail=f'Error al generar retroalimentación: {e}')
-    
-  else:
-    mensaje = body.mensaje if body else ""
-    try:
-      feedback = await orq.responderMensaje(mensaje, thread)
-    except Exception as e:
-      raise HTTPException(status_code=500, detail=f'Error al enviar el mensaje: {e}')
-    
-  return AgentMessageJson(text=feedback, thread_id=thread)
+    orq = FlowAgenteRetroalimentacion(user, seccion, questions, answers)
+    thread = body.thread_id if body else None
 
-@routerAgente.post("/reset", response_model= str)
+    if not thread:
+        thread = orq.reiniciarMemoria()
+        try:
+            feedback = await orq.darRetroalimentacion(thread)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f'Error al generar retroalimentación: {e}')
+
+    else:
+        mensaje = body.mensaje if body else ""
+        try:
+            feedback = await orq.responderMensaje(mensaje, thread)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f'Error al enviar el mensaje: {e}')
+
+    return AgentMessageJson(text=feedback, thread_id=thread)
+
+
+@routerAgente.post("/reset", response_model=str)
 def reiniciarMemoria() -> str:
-  thread = f"usuario:{'anon'}-{uuid.uuid4().hex}"
-  return thread
+    thread = f"usuario:{'anon'}-{uuid.uuid4().hex}"
+    return thread
