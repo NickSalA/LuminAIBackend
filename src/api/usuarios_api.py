@@ -62,6 +62,10 @@ class LastPageResponse(BaseModel):
 class LastPageRequest(BaseModel):
     id_page: int
 
+class DeleteResponse(BaseModel) :
+    cod : int
+    response : str
+
 # --- Función auxiliar (igual que antes) ---
 async def fetch_google_data(url: str, access_token: str, client: httpx.AsyncClient):
     headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}
@@ -390,4 +394,28 @@ async def get_user_qualifications(
         raise HTTPException(status_code=500, detail=f"Error de base de datos al obtener calificaciones: {e}")
 
     return qualifications
+
+@routerUsuarios.post("/user/delete/account", response_model=DeleteResponse)
+async def post_delete_account(
+    db : oracledb.Connection = Depends(get_connection),
+    user_data : dict = Depends(get_current_user)
+) :
+    user_id = user_data.get("user_id")
     
+    try :
+        with db.cursor() as cursor :
+            cursor.callproc("PKG_ACCOUNT.DELETE_USER_ACCOUNT", [user_id])
+            
+            db.commit()
+            
+            return DeleteResponse(
+                cod=200,
+                response= "Cuenta eliminada exitosamente!"
+            )
+    except oracledb.DatabaseError as e:
+        db.rollback()
+        # 4. Lanzar excepción HTTP real
+        raise HTTPException(status_code=500, detail=f"Error al eliminar la cuenta: {e}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error interno: {e}")
