@@ -135,6 +135,25 @@ async def google_auth(
             if not p_email or not p_google_id:
                 raise HTTPException(status_code=400, detail="Google no devolvió email o ID del usuario.")
 
+            birth_date = None
+            try:
+                birthdays = age_data.get('birthdays', [])
+                if birthdays:
+                    # Google suele devolver varias, tomamos la primera que tenga fecha completa
+                    for b in birthdays:
+                        date_info = b.get('date', {})
+                        year = date_info.get('year')
+                        month = date_info.get('month')
+                        day = date_info.get('day')
+
+                        if year and month and day:
+                            # Crear objeto datetime
+                            birth_date = datetime(year, month, day)
+                            break
+            except Exception as e:
+                print(f"Advertencia: No se pudo procesar la fecha de nacimiento: {e}")
+                # No fallamos el login, simplemente birth_date será None
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo datos de Google: {str(e)}")
 
@@ -145,7 +164,7 @@ async def google_auth(
             
             cursor.callproc(
                 "PKG_USER_REGISTRATION.HANDLE_GOOGLE_LOGIN",
-                [p_email, p_google_name, p_google_id, id_usuario_out]
+                [p_email, p_google_name, p_google_id, birth_date,id_usuario_out]
             )
             
             id_usuario_interno = id_usuario_out.getvalue()
