@@ -18,14 +18,17 @@ class chatRetroalimentacionRequest(BaseModel):
     answers: dict = Field (..., description="Respuestas proporcionadas por el usuario.")
 
 class preguntasRequest(BaseModel):
-    contextData: dict = Field (..., description="Datos de contexto adicionales para el agente.")
+    contextData: dict = Field (default={
+        "levelName": "",
+        "sectionName": "",
+        }, description="Datos de contexto adicionales para el agente.")
 
 class preguntasDiariasRequest(BaseModel):
     contextData: list[str] = Field (..., description="Lista de temas para generar preguntas diarias.")
     
 class respuestasRequest(BaseModel):
-    questions: dict = Field (..., description="Preguntas realizadas por el agente.")
-    answers: dict = Field (..., description="Respuestas proporcionadas por el usuario.")
+    questions: dict = Field (default={}, description="Preguntas realizadas por el agente.")
+    answers: dict = Field (default={}, description="Respuestas proporcionadas por el usuario.")
     userData: Optional[Dict[str, Any]] = Field(default=None, description="Datos del usuario o contexto (ej: sectionId).")
 
 # Modelos para las solicitudes de chat

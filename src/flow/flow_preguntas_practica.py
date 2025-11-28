@@ -57,7 +57,7 @@ def PromptEvaluador(seccion: dict) -> str:
     - No agregues campos adicionales ni comentarios en el JSON.
     4) CompleteTheCode
     - Incluye 'codeLines' con uno o más tokens 'MISSING' donde falta código.
-    - Incluye 'missingTokens' con EXACTAMENTE 4 opciones de tokens/fragmentos para completar.
+    - Incluye 'missingTokens' con opciones de tokens/fragmentos para completar coherentes a MISSING.
     - Incluye 'description' explicando el objetivo del código incompleto.
     
     Especificación de 'codeLines':
@@ -67,11 +67,11 @@ def PromptEvaluador(seccion: dict) -> str:
     - Tokens especiales permitidos:
         • INDENT: indica aumento de indentación en esa línea.
         • MISSING: indica un hueco a completar en CompleteTheCode.
-    - 'missingTokens': 4 piezas (tokens o fragmentos cortos) coherentes con los MISSING.
+    - 'missingTokens': Piezas (tokens o fragmentos cortos) coherentes con los MISSING (mismo número de MISSING).
     - En 'description' aclara el objetivo y, si hay varias soluciones válidas, menciónalo.
     - No incluyas comentarios en el JSON.
 
-    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida):
+    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida). Los tokens no pueden estar vacíos:
     "codeLines": [
         { "tokens": [ { "token": "def" }, { "token": "main" }, { "token": "(" }, { "token": ")" }, { "token": ":" } ] },
         { "tokens": [ { "token": "INDENT" }, { "token": "print" }, { "token": "(" }, { "token": "MISSING" }, { "token": ")" } ] }
@@ -102,7 +102,7 @@ def PromptEvaluador(seccion: dict) -> str:
                     
                     // Para CompleteTheCode:
                     "codeLines": [], // array de líneas con tokens
-                    "missingTokens": ["<tok1>", "<tok2>", "<tok3>", "<tok4>"]
+                    "missingTokens": ["<tok1>", "<tok2>", "<tok3>", "<tok4>",...]
                 }
             ]
         }

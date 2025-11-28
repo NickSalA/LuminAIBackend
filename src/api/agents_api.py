@@ -20,8 +20,8 @@ routerAgente = APIRouter()
 
 @routerAgente.post("/tutor", response_model=AgentMessageJson)
 async def obtener_tutor(req: chatTutorRequest, body: ChatIn):
-    user = req.userData or {}
-    seccion = req.contextData or {}
+    user = req.userData
+    seccion = req.contextData
 
     orq = FlowAgenteTutor(user, seccion)
     thread = body.thread_id
@@ -44,7 +44,7 @@ async def obtener_preguntas(
         current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user["user_id"]
-    seccion_data = req.contextData or {}
+    seccion_data = req.contextData
     id_section = seccion_data.get("id_section")
 
     if id_section:
@@ -72,7 +72,6 @@ async def obtener_preguntas(
 
 @routerAgente.post("/dailyPractice")
 async def obtener_preguntas_diarias(
-        req: preguntasDiariasRequest,
         db: oracledb.Connection = Depends(get_connection),
         current_user: dict = Depends(get_current_user)
 ):
@@ -285,7 +284,7 @@ async def obtener_retroalimentacion(req: chatRetroalimentacionRequest, body: Opt
 
 
 @routerAgente.post("/reset", response_model=str)
-def reiniciarMemoria() -> str:
+def reiniciar_Memoria() -> str:
     thread = f"usuario:{'anon'}-{uuid.uuid4().hex}"
     return thread
 
