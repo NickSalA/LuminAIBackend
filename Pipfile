@@ -26,6 +26,7 @@ starlette = "*"
 httpx = "*"
 google-auth-oauthlib = "*"
 langchain-google-genai = "*"
+toon-format= {git = "https://github.com/toon-format/toon-python.git"}
 
 [dev-packages]
 

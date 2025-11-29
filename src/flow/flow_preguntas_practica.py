@@ -1,7 +1,5 @@
 # Flujo para generar preguntas de práctica
 
-import time
-
 # Importa el agente evaluador
 from src.agents.agente_evaluador import AgenteEvaluador
 
@@ -92,9 +90,4 @@ class FlowAgentePreguntas:
             tools=[BC_Tool()],
         )
     async def generarPreguntas(self):
-        start_time = time.perf_counter()
-        respuesta = await self.AgenteEvaluador.responder("Genera AHORA la práctica con EXACTAMENTE 5 preguntas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")
-        end_time = time.perf_counter()
-        
-        print(f"Tiempo de generación: {end_time - start_time:.2f} segundos")
-        return respuesta
+        return await self.AgenteEvaluador.responder("Genera AHORA la práctica con EXACTAMENTE 5 preguntas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")

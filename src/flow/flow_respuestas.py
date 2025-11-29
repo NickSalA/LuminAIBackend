@@ -12,6 +12,7 @@ from src.tools.tool_buscar_base_conocimientos import BC_Tool
 # Tipos
 from typing import List
 import json
+from toon_format import encode
 
 def PromptEvaluador(preguntas: List[dict], respuestas: List[dict] = []) -> str:
     lenguaje = "Python"
@@ -73,8 +74,8 @@ def PromptEvaluador(preguntas: List[dict], respuestas: List[dict] = []) -> str:
     - NO incluyas ``` ni etiquetas de lenguaje ni comentarios.
     """
     contexto = f"""
-    Preguntas: {json.dumps(preguntas, ensure_ascii=False)}
-    Respuestas del usuario: {json.dumps(respuestas, ensure_ascii=False)}
+    Preguntas: {json.dumps(encode(preguntas), ensure_ascii=False)}
+    Respuestas del usuario: {json.dumps(encode(respuestas), ensure_ascii=False)}
     """
 
     message = (
@@ -98,3 +99,4 @@ class FlowAgenteRespuestas:
         
     async def evaluarRespuestas(self):
         return await self.AgenteEvaluador.responder("Evalúa las respuestas proporcionadas según las preguntas dadas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")
+        

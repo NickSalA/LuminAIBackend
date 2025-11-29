@@ -13,6 +13,7 @@ from src.tools.tool_buscar_base_conocimientos import BC_Tool
 # Importa 
 from typing import List
 import json
+from toon_format import encode
 
 def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respuestas: List[dict] = []) -> str:
     username = user.get("username", "Daminin")
@@ -69,8 +70,8 @@ def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respues
     )
     historial = (
         f"""
-    Preguntas: {json.dumps(preguntas)}
-    Respuestas del usuario: {json.dumps(respuestas)}
+    Preguntas: {json.dumps(encode(preguntas))}
+    Respuestas del usuario: {json.dumps(encode(respuestas))}
     """
     )
     
