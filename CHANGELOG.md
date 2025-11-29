@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.9.0...v1.9.1) (2025-11-29)
+
+
+### Bug Fixes
+
+* Improve error handling and data structure in response evaluation and question generation flows ([0446410](https://github.com/NickSalA/LuminAIBackend/commit/04464106b0d239a8912eb2fe906f805deeb1c8ca))
+
 # [1.9.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.8.4...v1.9.0) (2025-11-17)
 
 
