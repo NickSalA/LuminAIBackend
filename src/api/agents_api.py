@@ -131,7 +131,6 @@ async def obtener_respuestas(
         current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user["user_id"]
-
     orq = FlowAgenteRespuestas(req.questions, req.answers)
     try:
         evaluacion = await orq.evaluarRespuestas()
@@ -140,16 +139,10 @@ async def obtener_respuestas(
 
     score_obtenido = evaluacion.get("score", 0)
 
-    id_section = None
-    if getattr(req, "userData", None):
-        id_section = req.userData.get("sectionId") or req.userData.get("id_section")
-
-    if not id_section:
-        context_data = req.questions.get("contextData", {})
-        id_section = context_data.get("id_section")
-
-    if not id_section:
-        raise HTTPException(status_code=400, detail="Falta 'sectionId' en userData o contextData")
+    if req.userData is None:
+        raise HTTPException(status_code=400, detail="Falta userData en la solicitud.")
+        
+    id_section = req.userData.get("sectionId")
 
     try:
         with db.cursor() as cursor:

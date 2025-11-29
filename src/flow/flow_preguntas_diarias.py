@@ -25,95 +25,41 @@ def PromptEvaluador(sections: list[str]) -> str:
         f"""
     Eres un asistente que crea prácticas de programación con 5 preguntas a partir de los temas "{sectionsName}".
     Reglas:
-    - TODO en español.
-    - Solo código y ejemplos en {lenguaje}.
-    - EXACTAMENTE 5 preguntas por práctica.
-    - Usa únicamente estos tipos: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
-    - Debe haber al menos 1 pregunta de cada tipo; la quinta puede ser cualquiera.
-    - Sé claro y conciso en enunciados y explicaciones.
+    1. Salida: ÚNICAMENTE JSON válido. Sin markdown, sin comentarios.
+    2. Idioma: Español. Código en {lenguaje}.
+    3. Cantidad: Exactamente 5 preguntas.
+    4. Tipos: Al menos una de cada: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
+    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 5 palabras. No incluyas comentarios en el código.
     """
     )
-    formatoTipos = """
-    Requisitos por tipo:
-    1) SingleSelection
-    - Campos: question, description, options (exactamente 4).
-    - Enunciado con una sola respuesta correcta y opciones plausibles de longitud similar.
-    - Evita pistas, ambigüedades y explicaciones dentro de las opciones.
-    - No incluyas marcas de corrección en el JSON (solo las 4 opciones).
-    2) FreeResponse
-    - Campos: question, description.
-    - En 'description' indica criterios de evaluación:
-        • Palabras clave obligatorias.
-        • Elementos a evitar (si aplica).
-        • Rúbrica breve (2–3 criterios).
-    - Respuesta esperada corta y verificable.
-    3) FixTheCode
-    - Campos: question, description, wrongCode.
-    - 'wrongCode' debe contener errores concretos (sintaxis, lógica, nombres, casos borde).
-    - En 'description' define comportamiento esperado y, si aplica, 1–2 pruebas I/O simples (entrada → salida).
-    - No agregues campos adicionales ni comentarios en el JSON.
-    4) CompleteTheCode
-    - Incluye 'codeLines' con uno o más tokens 'MISSING' donde falta código.
-    - Incluye 'missingTokens' con EXACTAMENTE 4 opciones de tokens/fragmentos para completar.
-    - Incluye 'description' explicando el objetivo del código incompleto.
     
-    Especificación de 'codeLines':
-    - Campos: question, description, codeLines, missingTokens (exactamente 4).
-    - 'codeLines' es un array de líneas. Cada línea es un objeto con:
-        { "tokens": [ { "token": "<string|INDENT|MISSING|...>" }, ... ] }
-    - Tokens especiales permitidos:
-        • INDENT: indica aumento de indentación en esa línea.
-        • MISSING: indica un hueco a completar en CompleteTheCode.
-    - 'missingTokens': 4 piezas (tokens o fragmentos cortos) coherentes con los MISSING.
-    - En 'description' aclara el objetivo y, si hay varias soluciones válidas, menciónalo.
-    - No incluyas comentarios en el JSON.
-
-    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida):
-    "codeLines": [
-        { "tokens": [ { "token": "def" }, { "token": "main" }, { "token": "(" }, { "token": ")" }, { "token": ":" } ] },
-        { "tokens": [ { "token": "INDENT" }, { "token": "print" }, { "token": "(" }, { "token": "MISSING" }, { "token": ")" } ] }
-    ]
+    formatoTipos = """
+    Tipos de preguntas:
+    - SingleSelection: "options" (4 strings), una correcta. Sin pistas obvias. 
+    - FreeResponse: "description" incluye criterios de evaluación breves.
+    - FixTheCode: "wrongCode" con errores. "description" describe qué debe hacer el código (funcionalidad esperada), SIN revelar la solución explícita.
+    - CompleteTheCode: "codeLines" (array de objetos {"tokens": [{"token": "val"}]}). Usa tokens "MISSING" para huecos y "INDENT" para sangría. "missingTokens" lista las soluciones.
     """
+
     formatoJSON = (r"""
-    FORMATO JSON DE SALIDA (estricto):
-    - Devuelve SOLO un objeto JSON válido (application/json).
-    - No uses Markdown, no uses comillas invertidas/backticks (```), no incluyas texto fuera del objeto.
-    - No uses null ni arrays vacíos para campos opcionales: omite el campo si no aplica.
-    - Campos:
-        {
-            "questions":[
-                {
-                    // Campos comunes:
-                    "id": "<id_unico>", // 1, 2, 3, 4, 5
-                    "type": "SINGLESELECTION" | "FREERESPONSE" | "FIXTHECODE" | "COMPLETETHECODE",
-                    "description": "<texto conciso>", // str
-                    
-                    // Para SingleSelection:
-                    "options": ["<op1>", "<op2>", "<op3>", "<op4>"], // array de str (exactamente 4 opciones)
-                    
-                    // Para SingleSelection y FreeResponse:
-                    "question": "<texto de la pregunta>", // str
-                    
-                    // Para FixTheCode:
-                    "wrongCode": "<Texto con errores>", // str
-                    
-                    // Para CompleteTheCode:
-                    "codeLines": [], // array de líneas con tokens
-                    "missingTokens": ["<tok1>", "<tok2>", "<tok3>", "<tok4>"]
-                }
-            ]
-        }
-    - Validación:
-        • EXACTAMENTE 5 preguntas.
-        • Al menos 1 de cada tipo.
-    """
-    )
-    instrucciones = """
-    Genera la práctica ahora para el tema y nivel dados.
-    Responde SOLO con el objeto JSON válido siguiendo el formato anterior.
-    NO incluyas ``` ni etiquetas de lenguaje ni comentarios.
-    """
-
+    Estructura JSON requerida:
+    {
+        "questions": [
+            {
+                "id": 1,
+                "type": "SINGLESELECTION" | "FREERESPONSE" | "FIXTHECODE" | "COMPLETETHECODE",
+                "question": "Enunciado...",
+                "description": "Detalles/Rúbrica...",
+                "options": ["...", "...", "...", "..."], // Solo SingleSelection
+                "wrongCode": "...", // Solo FixTheCode
+                "codeLines": [{"tokens": [{"token": "..."}]}], // Solo CompleteTheCode
+                "missingTokens": ["..."] // Solo CompleteTheCode
+            }
+        ]
+    }
+    """)
+    
+    instrucciones = "Genera el JSON ahora."
     message = (
         informacionSeccion,
         identidad,

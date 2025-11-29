@@ -1,5 +1,7 @@
 # Flujo para generar preguntas de práctica
 
+import time
+
 # Importa el agente evaluador
 from src.agents.agente_evaluador import AgenteEvaluador
 
@@ -25,98 +27,49 @@ def PromptEvaluador(seccion: dict) -> str:
 
     identidad = (
         f"""
-    Eres un asistente que crea prácticas de programación con 5 preguntas a partir del tema "{sectionName}".
+    Eres un asistente experto en {lenguaje}. Crea una práctica de 5 preguntas sobre "{sectionName}" (Nivel: {levelName}).
     Reglas:
-    - TODO en español.
-    - Solo código y ejemplos en {lenguaje}.
-    - EXACTAMENTE 5 preguntas por práctica.
-    - Determina la dificultad según el nivel del tema "{levelName}".
-    - Usa únicamente estos tipos: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
-    - Debe haber al menos 1 pregunta de cada tipo; la quinta puede ser cualquiera.
-    - Sé claro y conciso en enunciados y explicaciones.
+    1. Salida: ÚNICAMENTE JSON válido. Sin markdown, sin comentarios.
+    2. Idioma: Español. Código en {lenguaje}.
+    3. Cantidad: Exactamente 5 preguntas.
+    4. Tipos: Al menos una de cada: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
+    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 5 palabras. No incluyas comentarios en el código. En CompleteTheCode usa a lo mucho 5 o 6 "tokens".
     """
     )
-    formatoTipos = """
-    Requisitos por tipo:
-    1) SingleSelection
-    - Campos: question, description, options (exactamente 4).
-    - Enunciado con una sola respuesta correcta y opciones plausibles de longitud corta (frases cortas).
-    - Evita pistas, ambigüedades y explicaciones dentro de las opciones.
-    - No incluyas marcas de corrección en el JSON (solo las 4 opciones).
-    2) FreeResponse
-    - Campos: question, description.
-    - En 'description' indica criterios de evaluación:
-        • Palabras clave obligatorias.
-        • Elementos a evitar (si aplica).
-        • Rúbrica breve (2–3 criterios).
-    - Respuesta esperada corta y verificable.
-    3) FixTheCode
-    - Campos: question, description, wrongCode.
-    - 'wrongCode' debe contener errores concretos (sintaxis, lógica, nombres, casos borde).
-    - En 'description' define comportamiento esperado y, si aplica, 1–2 pruebas I/O simples (entrada → salida).
-    - No agregues campos adicionales ni comentarios en el JSON.
-    4) CompleteTheCode
-    - Campos: question, description, codeLines, missingTokens.
-    - Incluye 'codeLines' con uno o más tokens 'MISSING' donde falta código.
-    - Incluye 'missingTokens' con opciones de tokens/fragmentos para completar coherentes a MISSING.
-    - Incluye 'description' explicando el objetivo del código incompleto.
     
-    Especificación de 'codeLines':
-    - 'codeLines' es un array de líneas. Cada línea es un objeto con:
-        { "tokens": [ { "token": "<string|INDENT|MISSING|...>" }, ... ] }
-    - IMPORTANTE: Los objetos dentro de "tokens" NO pueden estar vacíos (ej: {} es INVÁLIDO). Deben tener siempre la propiedad "token" con un valor no vacío.
-    - Tokens especiales permitidos:
-        • INDENT: indica aumento de indentación en esa línea.
-        • MISSING: indica un hueco a completar en CompleteTheCode.
-    - 'missingTokens': Piezas (tokens o fragmentos cortos) coherentes con los MISSING (mismo número de MISSING).
-    - En 'description' aclara el objetivo y, si hay varias soluciones válidas, menciónalo.
-    - No incluyas comentarios en el JSON.
+    formatoTipos = """
+    Tipos de preguntas:
+    - SingleSelection: "options" (4 strings), una correcta. Sin pistas obvias. 
+    - FreeResponse: "description" incluye criterios de evaluación breves.
+    - FixTheCode: "wrongCode" con errores. "description" describe qué debe hacer el código (funcionalidad esperada), SIN revelar la solución explícita.
+    - CompleteTheCode: "codeLines" es un array de líneas. Cada línea tiene "tokens". 
+      Reglas para tokens:
+      1. NO generes tokens vacíos ("").
+      2. Separa la lógica (ej: "var", "=", "val" son 3 tokens distintos).
+      3. Usa "INDENT" solo al inicio de la línea para sangría.
+      4. Usa "MISSING" donde el usuario debe completar.
+      5. "missingTokens" NO DEBE TENER DUPLICADOS. Oculta elementos diferentes (ej: una variable y un operador, no dos veces "=").
+    """
 
-    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida):
-    "codeLines": [
-        { "tokens": [ { "token": "def" }, { "token": "main" }, { "token": "(" }, { "token": ")" }, { "token": ":" } ] },
-        { "tokens": [ { "token": "INDENT" }, { "token": "print" }, { "token": "(" }, { "token": "MISSING" }, { "token": ")" } ] }
-    ]
-    """
     formatoJSON = (r"""
-    FORMATO JSON DE SALIDA (estricto):
-    - Devuelve SOLO un objeto JSON válido (application/json).
-    - No uses Markdown, no uses comillas invertidas/backticks (```), no incluyas texto fuera del objeto.
-    - No uses null ni arrays vacíos para campos opcionales: omite el campo si no aplica.
-    - Campos:
-        {
-            "questions":[
-                {
-                    // Campos comunes:
-                    "id": "<id_unico>", // 1, 2, 3, 4, 5
-                    "type": "SINGLESELECTION" | "FREERESPONSE" | "FIXTHECODE" | "COMPLETETHECODE",
-                    "description": "<texto conciso>", // str
-                    
-                    // Para SingleSelection:
-                    "options": ["<op1>", "<op2>", "<op3>", "<op4>"], // array de str (exactamente 4 opciones)
-                    
-                    // Para SingleSelection y FreeResponse:
-                    "question": "<texto de la pregunta>", // str
-                    
-                    // Para FixTheCode:
-                    "wrongCode": "<Texto con errores>", // str
-                    
-                    // Para CompleteTheCode:
-                    "codeLines": [], // array de líneas con tokens
-                    "missingTokens": ["<tok1>", "<tok2>", "<tok3>", "<tok4>",...]
-                }
-            ]
-        }
-    - Validación:
-        • EXACTAMENTE 5 preguntas.
-        • Al menos 1 de cada tipo.
-    """
-    )
-    instrucciones = """
-    Genera la práctica ahora para el tema y nivel dados.
-    Responde SOLO con el objeto JSON válido siguiendo el formato anterior.
-    NO incluyas ``` ni etiquetas de lenguaje ni comentarios.
-    """
+    Estructura JSON requerida:
+    {
+        "questions": [
+            {
+                "id": 1,
+                "type": "SINGLESELECTION" | "FREERESPONSE" | "FIXTHECODE" | "COMPLETETHECODE",
+                "question": "Enunciado...",
+                "description": "Detalles/Rúbrica...",
+                "options": ["...", "...", "...", "..."], // Solo SingleSelection
+                "wrongCode": "...", // Solo FixTheCode
+                "codeLines": [{"tokens": [{"token": "..."}]}], // Solo CompleteTheCode
+                "missingTokens": ["..."] // Solo CompleteTheCode
+            }
+        ]
+    }
+    """)
+    
+    instrucciones = "Genera el JSON ahora."
 
     message = (
         informacionSeccion,
@@ -139,4 +92,9 @@ class FlowAgentePreguntas:
             tools=[BC_Tool()],
         )
     async def generarPreguntas(self):
-        return await self.AgenteEvaluador.responder("Genera AHORA la práctica con EXACTAMENTE 5 preguntas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")
+        start_time = time.perf_counter()
+        respuesta = await self.AgenteEvaluador.responder("Genera AHORA la práctica con EXACTAMENTE 5 preguntas en el FORMATO JSON indicado. Responde SOLO con el JSON válido, sin texto adicional, comentarios ni explicaciones fuera del objeto.")
+        end_time = time.perf_counter()
+        
+        print(f"Tiempo de generación: {end_time - start_time:.2f} segundos")
+        return respuesta

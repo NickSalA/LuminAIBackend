@@ -4,7 +4,7 @@
 from pydantic import BaseModel, Field
 
 # Utilitarios para datos opcionales
-from typing import Optional, Dict, Any
+from typing import List, Optional, Dict, Any
 
 # Modelos para recibir la información
 class chatTutorRequest(BaseModel):
@@ -27,9 +27,9 @@ class preguntasDiariasRequest(BaseModel):
     contextData: list[str] = Field (..., description="Lista de temas para generar preguntas diarias.")
     
 class respuestasRequest(BaseModel):
-    questions: dict = Field (default={}, description="Preguntas realizadas por el agente.")
-    answers: dict = Field (default={}, description="Respuestas proporcionadas por el usuario.")
-    userData: Optional[Dict[str, Any]] = Field(default=None, description="Datos del usuario o contexto (ej: sectionId).")
+    questions: List[dict] = Field (..., description="Preguntas realizadas por el agente.")
+    answers: List[dict] = Field (..., description="Respuestas proporcionadas por el usuario.")
+    userData: Optional[Dict[str, Any]] = Field(default={"sectionId": int}, description="Datos del usuario o contexto (ej: sectionId).")
 
 # Modelos para las solicitudes de chat
 

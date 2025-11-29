@@ -9,9 +9,11 @@ from src.util.util_llm import obtenerModelo
 # Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
-def PromptEvaluador(p: dict = {}, r: dict = {}) -> str:
-    preguntas = p.get("questions")
-    respuestas = r.get("answers")
+# Tipos
+from typing import List
+import json
+
+def PromptEvaluador(preguntas: List[dict], respuestas: List[dict] = []) -> str:
     lenguaje = "Python"
 
     identidad = f"""
@@ -71,8 +73,8 @@ def PromptEvaluador(p: dict = {}, r: dict = {}) -> str:
     - NO incluyas ``` ni etiquetas de lenguaje ni comentarios.
     """
     contexto = f"""
-    Preguntas: {preguntas}
-    Respuestas del usuario: {respuestas}
+    Preguntas: {json.dumps(preguntas, ensure_ascii=False)}
+    Respuestas del usuario: {json.dumps(respuestas, ensure_ascii=False)}
     """
 
     message = (
@@ -86,7 +88,7 @@ def PromptEvaluador(p: dict = {}, r: dict = {}) -> str:
     return prompt
 
 class FlowAgenteRespuestas:
-    def __init__(self,preguntas: dict = {}, respuestas: dict = {}):
+    def __init__(self,preguntas: List[dict], respuestas: List[dict] = []):
         self.llm = obtenerModelo()
         self.AgenteEvaluador = AgenteEvaluador(
             llm=self.llm,
