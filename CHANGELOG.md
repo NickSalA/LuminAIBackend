@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.9.1...v1.10.0) (2025-11-29)
+
+
+### Features
+
+* Add toon-format package and update JSON encoding in flow files ([9bde0ab](https://github.com/NickSalA/LuminAIBackend/commit/9bde0ab3695594597eff806d65b4e6e91b22c2a9))
+
 ## [1.9.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.9.0...v1.9.1) (2025-11-29)
 
 
