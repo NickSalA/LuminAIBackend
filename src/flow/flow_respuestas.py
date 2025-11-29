@@ -57,7 +57,6 @@ def PromptEvaluador(p: dict = {}, r: dict = {}) -> str:
                 "questionsResults": [true, false, ...],
                 "resultType": "APPROVED" | "DISAPPROVED" | "FULLYAPPROVED",
                 "score": 0
-            }
         }
     Reglas:
     - questionsResults: boolean por cada pregunta en orden.

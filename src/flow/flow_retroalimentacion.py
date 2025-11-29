@@ -13,8 +13,8 @@ def PromptSistema(user: dict, seccion: dict, preguntas: dict = {}, respuestas: d
     username = user.get("username", "Daminin")
     age = user.get("age", "20")
     
-    levelName = seccion.get("Introducción al JSON", "")
-    sectionName = seccion.get("Reglas de sintaxis para objetos y arrays JSON.", "")
+    levelName = seccion.get("levelName", "")
+    sectionName = seccion.get("sectionName", "")
     lenguaje = "Python"
     
     identidad = (

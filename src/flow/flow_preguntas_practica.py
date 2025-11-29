@@ -10,8 +10,8 @@ from src.util.util_llm import obtenerModelo
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
 def PromptEvaluador(seccion: dict) -> str:
-    levelName = seccion.get("", "Introducción al JSON")
-    sectionName = seccion.get("", "Reglas de sintaxis para objetos y arrays JSON.")
+    levelName = seccion.get("levelName", "Introducción al JSON")
+    sectionName = seccion.get("sectionName", "Reglas de sintaxis para objetos y arrays JSON.")
     lenguaje = "Python"
     
     informacionSeccion = (
@@ -40,7 +40,7 @@ def PromptEvaluador(seccion: dict) -> str:
     Requisitos por tipo:
     1) SingleSelection
     - Campos: question, description, options (exactamente 4).
-    - Enunciado con una sola respuesta correcta y opciones plausibles de longitud similar.
+    - Enunciado con una sola respuesta correcta y opciones plausibles de longitud corta (frases cortas).
     - Evita pistas, ambigüedades y explicaciones dentro de las opciones.
     - No incluyas marcas de corrección en el JSON (solo las 4 opciones).
     2) FreeResponse
@@ -56,14 +56,15 @@ def PromptEvaluador(seccion: dict) -> str:
     - En 'description' define comportamiento esperado y, si aplica, 1–2 pruebas I/O simples (entrada → salida).
     - No agregues campos adicionales ni comentarios en el JSON.
     4) CompleteTheCode
+    - Campos: question, description, codeLines, missingTokens.
     - Incluye 'codeLines' con uno o más tokens 'MISSING' donde falta código.
     - Incluye 'missingTokens' con opciones de tokens/fragmentos para completar coherentes a MISSING.
     - Incluye 'description' explicando el objetivo del código incompleto.
     
     Especificación de 'codeLines':
-    - Campos: question, description, codeLines, missingTokens (exactamente 4).
     - 'codeLines' es un array de líneas. Cada línea es un objeto con:
         { "tokens": [ { "token": "<string|INDENT|MISSING|...>" }, ... ] }
+    - IMPORTANTE: Los objetos dentro de "tokens" NO pueden estar vacíos (ej: {} es INVÁLIDO). Deben tener siempre la propiedad "token" con un valor no vacío.
     - Tokens especiales permitidos:
         • INDENT: indica aumento de indentación en esa línea.
         • MISSING: indica un hueco a completar en CompleteTheCode.
@@ -71,7 +72,7 @@ def PromptEvaluador(seccion: dict) -> str:
     - En 'description' aclara el objetivo y, si hay varias soluciones válidas, menciónalo.
     - No incluyas comentarios en el JSON.
 
-    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida). Los tokens no pueden estar vacíos:
+    Ejemplo ilustrativo de 'codeLines' (solo como guía, NO es parte de la salida):
     "codeLines": [
         { "tokens": [ { "token": "def" }, { "token": "main" }, { "token": "(" }, { "token": ")" }, { "token": ":" } ] },
         { "tokens": [ { "token": "INDENT" }, { "token": "print" }, { "token": "(" }, { "token": "MISSING" }, { "token": ")" } ] }
