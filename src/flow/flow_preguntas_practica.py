@@ -33,7 +33,7 @@ def PromptEvaluador(seccion: dict) -> str:
     2. Idioma: Español. Código en {lenguaje}.
     3. Cantidad: Exactamente 5 preguntas.
     4. Tipos: Al menos una de cada: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
-    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 5 palabras. No incluyas comentarios en el código. En CompleteTheCode usa a lo mucho 5 o 6 "tokens".
+    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 3 palabras. No incluyas comentarios en el código. En CompleteTheCode usa a lo mucho 5 o 6 "tokens".
     """
     )
     

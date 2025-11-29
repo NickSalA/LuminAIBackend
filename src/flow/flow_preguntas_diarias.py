@@ -29,7 +29,7 @@ def PromptEvaluador(sections: list[str]) -> str:
     2. Idioma: Español. Código en {lenguaje}.
     3. Cantidad: Exactamente 5 preguntas.
     4. Tipos: Al menos una de cada: SingleSelection, FreeResponse, FixTheCode, CompleteTheCode.
-    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 5 palabras. No incluyas comentarios en el código.
+    5. Concisión: Sé muy breve y directo. Las opciones de respuesta deben tener máximo 2 palabras. No incluyas comentarios en el código. En CompleteTheCode usa a lo mucho 5 o 6 "tokens".
     """
     )
     
@@ -38,7 +38,13 @@ def PromptEvaluador(sections: list[str]) -> str:
     - SingleSelection: "options" (4 strings), una correcta. Sin pistas obvias. 
     - FreeResponse: "description" incluye criterios de evaluación breves.
     - FixTheCode: "wrongCode" con errores. "description" describe qué debe hacer el código (funcionalidad esperada), SIN revelar la solución explícita.
-    - CompleteTheCode: "codeLines" (array de objetos {"tokens": [{"token": "val"}]}). Usa tokens "MISSING" para huecos y "INDENT" para sangría. "missingTokens" lista las soluciones.
+    - CompleteTheCode: "codeLines" es un array de líneas. Cada línea tiene "tokens". 
+      Reglas para tokens:
+      1. NO generes tokens vacíos ("").
+      2. Separa la lógica (ej: "var", "=", "val" son 3 tokens distintos).
+      3. Usa "INDENT" solo al inicio de la línea para sangría.
+      4. Usa "MISSING" donde el usuario debe completar.
+      5. "missingTokens" NO DEBE TENER DUPLICADOS. Oculta elementos diferentes (ej: una variable y un operador, no dos veces "=").
     """
 
     formatoJSON = (r"""

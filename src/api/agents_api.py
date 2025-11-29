@@ -11,7 +11,7 @@ from src.flow.flow_preguntas_practica import FlowAgentePreguntas
 from src.flow.flow_respuestas import FlowAgenteRespuestas
 from src.flow.flow_retroalimentacion import FlowAgenteRetroalimentacion
 
-from src.util.util_schemas import (QuestionResultsJson, AgentMessageJson, ChatIn,respuestasRequest, chatTutorRequest, chatRetroalimentacionRequest,preguntasRequest, preguntasDiariasRequest,PracticeResultsResponse, DailyPracticeResultsResponse,UserMetrics, CalificationJson)
+from src.util.util_schemas import (AgentMessageJson, ChatIn,respuestasRequest, chatTutorRequest, chatRetroalimentacionRequest,preguntasRequest,PracticeResultsResponse, DailyPracticeResultsResponse,UserMetrics, CalificationJson)
 
 from src.db.session import get_connection
 from src.core.security import get_current_user
@@ -138,12 +138,8 @@ async def obtener_respuestas(
         raise HTTPException(status_code=500, detail=f'Error IA evaluando respuestas: {e}')
 
     score_obtenido = evaluacion.get("score", 0)
-
-    if req.userData is None:
-        raise HTTPException(status_code=400, detail="Falta userData en la solicitud.")
-        
     id_section = req.userData.get("sectionId")
-
+    
     try:
         with db.cursor() as cursor:
             cursor.callproc("PKG_PROGRESS.FINISH_ATTEMPT", [user_id, id_section, score_obtenido])
@@ -253,10 +249,8 @@ async def obtener_respuestas_diarias(
 async def obtener_retroalimentacion(req: chatRetroalimentacionRequest, body: Optional[ChatIn] = None):
     user = req.userData
     seccion = req.contextData
-    questions = req.questions
-    answers = req.answers
 
-    orq = FlowAgenteRetroalimentacion(user, seccion, questions, answers)
+    orq = FlowAgenteRetroalimentacion(user, seccion, req.questions, req.answers)
     thread = body.thread_id if body else None
 
     if not thread:

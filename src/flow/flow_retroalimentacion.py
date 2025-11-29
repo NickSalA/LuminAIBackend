@@ -1,6 +1,7 @@
 # Flujo para retroalimentación del tutor
 
 # Importa el agente tutor
+
 from src.agents.agente_tutor import AgenteTutor
 
 # Importa el modelo de lenguaje
@@ -9,7 +10,11 @@ from src.util.util_llm import obtenerModelo
 # Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
-def PromptSistema(user: dict, seccion: dict, preguntas: dict = {}, respuestas: dict = {}) -> str:
+# Importa 
+from typing import List
+import json
+
+def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respuestas: List[dict] = []) -> str:
     username = user.get("username", "Daminin")
     age = user.get("age", "20")
     
@@ -64,9 +69,8 @@ def PromptSistema(user: dict, seccion: dict, preguntas: dict = {}, respuestas: d
     )
     historial = (
         f"""
-    HISTORIAL DE PREGUNTAS Y RESPUESTAS:
-    {preguntas}
-    {respuestas}
+    Preguntas: {json.dumps(preguntas)}
+    Respuestas del usuario: {json.dumps(respuestas)}
     """
     )
     
@@ -83,7 +87,7 @@ def PromptSistema(user: dict, seccion: dict, preguntas: dict = {}, respuestas: d
     
     return prompt
 class FlowAgenteRetroalimentacion:
-    def __init__(self, user, seccion, preguntas: dict = {}, respuestas: dict = {}):
+    def __init__(self, user, seccion, preguntas: List[dict], respuestas: List[dict]):
         self.llm = obtenerModelo()
         self.user = user
         self.seccion = seccion
