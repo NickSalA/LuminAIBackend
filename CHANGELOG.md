@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.3...v1.11.0) (2025-11-30)
+
+
+### Features
+
+* Enhance text cleaning and extraction in document processing ([f630171](https://github.com/NickSalA/LuminAIBackend/commit/f630171269c3335045770026fc52de00ab4cf1d0))
+
 ## [1.10.3](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.2...v1.10.3) (2025-11-30)
 
 
