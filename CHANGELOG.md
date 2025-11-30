@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.1...v1.10.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* Improve response handling in ejecutar function for better output clarity ([cea4046](https://github.com/NickSalA/LuminAIBackend/commit/cea404675e1d4b7f3fb62664e363bf77ecab985b))
+
 ## [1.10.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.0...v1.10.1) (2025-11-30)
 
 
