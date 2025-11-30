@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime, timezone
 from typing import List, Dict, Any
 import shutil
-
+import re
 # Azure Document Intelligence
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
@@ -35,6 +35,21 @@ def _file_sha256(path: str) -> str:
             h.update(b)
     return h.hexdigest()
 
+def limpiar_texto(texto: str) -> str:
+    """
+    Limpia 'basura' común de PDFs extraídos, como saltos de línea CSV (\r\n)
+    o comillas excesivas generadas por tablas mal interpretadas.
+    """
+    if not texto:
+        return ""
+    # Reemplazar retornos de carro
+    texto = texto.replace("\r", " ")
+    # Eliminar comillas dobles excesivas que a veces aparecen en celdas
+    texto = texto.replace('""', '"')
+    # Colapsar espacios múltiples y saltos de línea excesivos
+    texto = re.sub(r'\n{3,}', '\n\n', texto)
+    texto = re.sub(r' {2,}', ' ', texto)
+    return texto.strip()
 
 def _split_text(texto: str, max_chars: int = 1000, overlap: int = 100) -> List[str]:
     splitter = RecursiveCharacterTextSplitter(
@@ -97,38 +112,46 @@ def _resumen_subida(resultados: Any) -> Dict[str, Any] | None:
 # -------------------------------
 def leerContenidoDeDocumento(rutaArchivo: str):
     """
-    Devuelve:
-        - full_text (str): texto completo en orden lógico
-        - parrafos (List[Dict]): [{'text': str, 'page': int|None}, ...]
+    Versión compatible con azure-ai-formrecognizer 3.3.3
+    Usa 'prebuilt-layout' para mejor detección de estructura visual,
+    pero sin el parámetro de markdown que causa el error.
     """
     servicio: DocumentAnalysisClient = conectarDocumentIntelligence()
+    
     with open(rutaArchivo, "rb") as archivo:
-        poller = servicio.begin_analyze_document("prebuilt-read", archivo)
+        # 1. ERROR SOLUCIONADO: Quitamos 'output_content_format'
+        # Usamos prebuilt-layout, que es más inteligente que 'read' para tablas
+        poller = servicio.begin_analyze_document("prebuilt-layout", archivo)
         resultado = poller.result()
 
     full_text = resultado.content or ""
-
     parrafos: List[Dict[str, Any]] = []
-    for p in getattr(resultado, "paragraphs", []) or []:
-        if not getattr(p, "spans", None):
-            continue
-        span = p.spans[0]
-        texto = full_text[span.offset : span.offset + span.length].strip()
-        if not texto:
-            continue
-        page = None
-        if getattr(p, "bounding_regions", None):
-            page = getattr(p.bounding_regions[0], "page_number", None)
-        parrafos.append({"text": texto, "page": page})
 
-    # Fallback si no hay paragraphs (usamos pages->lines)
-    if not parrafos:
-        contenido: List[str] = []
-        for pagina in resultado.pages:
-            for linea in pagina.lines:
-                contenido.append(linea.content)
-        full_text = "\n".join(contenido).strip()
-        parrafos = [{"text": full_text, "page": None}]
+    # 2. Extracción Robusta:
+    # Iteramos por páginas y luego por líneas. El modelo 'layout' agrupa
+    # las líneas visualmente mucho mejor que el modelo 'read'.
+    for page in resultado.pages:
+        lines_content = []
+        
+        # Recolectamos el texto línea por línea
+        if hasattr(page, 'lines'):
+            for line in page.lines:
+                lines_content.append(line.content)
+        
+        # Unimos con salto de línea. 
+        # Esto suele preservar la estructura de listas y párrafos mejor.
+        page_text = "\n".join(lines_content)
+        
+        # Solo guardamos si la página tiene texto
+        if page_text.strip():
+            parrafos.append({
+                "text": page_text, 
+                "page": page.page_number
+            })
+
+    # Fallback: Si por alguna razón extraña no hay páginas detectadas pero sí texto global
+    if not parrafos and full_text:
+         parrafos.append({"text": full_text, "page": 1})
 
     return full_text, parrafos
 
@@ -139,38 +162,65 @@ def obtenerChunksDesdeParrafos(
     parrafos: List[Dict[str, Any]],
     rutaArchivo: str,
     title: str | None = None,
+    level: str = "",
     tags: List[str] | None = None,
 ) -> List[Dict[str, Any]]:
-    """
-    Devuelve lista de dicts listos para indexar en AI Search con:
-    id, parent_id, chunk_index, page, title, updated_at, tags, content
-    """
-    parent_id = _file_sha256(rutaArchivo)[:16]  # id estable por documento
+    
+    # Generar metadatos base
+    parent_id = _file_sha256(rutaArchivo)[:16]
     updated_at = datetime.fromtimestamp(
         os.path.getmtime(rutaArchivo), tz=timezone.utc
     ).isoformat()
     title = title or os.path.basename(rutaArchivo)
+    # Si 'level' viene vacío, usa el nombre de la carpeta padre
+    level = level or os.path.basename(os.path.dirname(rutaArchivo))
     tags = tags or []
 
     chunks: List[Dict[str, Any]] = []
     chunk_index = 0
 
+    # Agrupación por página (Crucial para diapositivas)
+    contenido_por_pagina: Dict[Any, str] = {}
+    
     for p in parrafos:
-        p_text = (p.get("text") or "").strip()
+        raw_text = p.get("text") or ""
+        # APLICAMOS LIMPIEZA AQUÍ
+        p_text = limpiar_texto(raw_text)
+        
         if not p_text:
             continue
-        page = p.get("page")
-        for parte in _split_text(p_text):
+            
+        # Manejo seguro del número de página
+        page_num = p.get("page")
+        page_key = page_num if page_num is not None else 0 
+        
+        if page_key not in contenido_por_pagina:
+            contenido_por_pagina[page_key] = ""
+        
+        contenido_por_pagina[page_key] += p_text + "\n\n"
+
+    # Generar chunks finales
+    for page_num, page_text in contenido_por_pagina.items():
+        partes = _split_text(page_text)
+        
+        # Azure espera Int32 para 'page'. Si es 0 (indefinido), lo mandamos tal cual.
+        real_page = page_num 
+        
+        for parte in partes:
+            if len(parte) < 10: continue # Saltar fragmentos vacíos
+
+            # Estructura EXACTA para tu índice 'lumin_index'
             chunks.append(
                 {
                     "id": f"{parent_id}-{chunk_index}",
                     "parent_id": parent_id,
                     "chunk_index": chunk_index,
-                    "page": page, 
-                    "title": title,
-                    "updated_at": updated_at, 
-                    "tags": tags,
-                    "content": parte,
+                    "page": int(real_page),      # Int32
+                    "title": title,              # String
+                    "updated_at": updated_at,    # DateTimeOffset
+                    "tags": tags,                # StringCollection
+                    "level": level,              # String
+                    "content": parte,            # String (Searchable)
                 }
             )
             chunk_index += 1
