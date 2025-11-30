@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.0...v1.10.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* Correct age type in user data models from string to integer ([edb6cc8](https://github.com/NickSalA/LuminAIBackend/commit/edb6cc8989ba0aee1d015f24a5349ac64736464d))
+
 # [1.10.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.9.1...v1.10.0) (2025-11-29)
 
 
