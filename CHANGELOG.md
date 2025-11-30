@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.13.0...v1.14.0) (2025-11-30)
+
+
+### Features
+
+* extend JWT access token expiration to 30 days and add initial Dockerfile and .dockerignore ([71632b9](https://github.com/NickSalA/LuminAIBackend/commit/71632b9b86876f94f746d60e6d999a360a094695))
+
 # [1.13.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.12.0...v1.13.0) (2025-11-30)
 
 
