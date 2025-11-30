@@ -1,3 +1,10 @@
+## [1.10.3](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.2...v1.10.3) (2025-11-30)
+
+
+### Bug Fixes
+
+* Restore flujoTrabajo parameter in PromptSistema function for proper functionality ([5171b2e](https://github.com/NickSalA/LuminAIBackend/commit/5171b2e34b9946218213deff36eee01a36f06563))
+
 ## [1.10.2](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.1...v1.10.2) (2025-11-30)
 
 
