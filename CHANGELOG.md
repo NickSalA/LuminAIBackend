@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.12.0...v1.13.0) (2025-11-30)
+
+
+### Features
+
+* refine tutor agent prompt instructions for conciseness and structured explanations. ([844cbe7](https://github.com/NickSalA/LuminAIBackend/commit/844cbe75eba8317f13ad7031197bc04a85083ba8))
+
 # [1.12.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.11.0...v1.12.0) (2025-11-30)
 
 
