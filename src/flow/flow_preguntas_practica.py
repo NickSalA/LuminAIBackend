@@ -38,8 +38,8 @@ def PromptEvaluador(seccion: dict) -> str:
     formatoTipos = """
     Tipos de preguntas:
     - SingleSelection: "options" (4 strings), una correcta. Sin pistas obvias. 
-    - FreeResponse: "description" incluye criterios de evaluación breves.
-    - FixTheCode: "wrongCode" con errores. "description" describe qué debe hacer el código (funcionalidad esperada), SIN revelar la solución explícita.
+    - FreeResponse: Sin campos adicionales especificos.
+    - FixTheCode: "wrongCode" con errores. 
     - CompleteTheCode: "codeLines" es un array de líneas. Cada línea tiene "tokens". 
       Reglas para tokens:
       1. NO generes tokens vacíos ("").
@@ -61,7 +61,6 @@ def PromptEvaluador(seccion: dict) -> str:
                 "id": 1,
                 "type": "SINGLESELECTION" | "FREERESPONSE" | "FIXTHECODE" | "COMPLETETHECODE",
                 "question": "Enunciado...",
-                "description": "Detalles/Rúbrica...",
                 "options": ["...", "...", "...", "..."], // Solo SingleSelection
                 "wrongCode": "...", // Solo FixTheCode
                 "codeLines": [{"tokens": [{"token": "..."}]}], // Solo CompleteTheCode

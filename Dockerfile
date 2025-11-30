@@ -31,7 +31,7 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY .wallet/ app/wallet    
+COPY wallet/ app/wallet    
 
 # Copiamos el código fuente de tu app
 COPY . .
