@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.15.0...v1.15.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* correct wallet directory path in Dockerfile and update question types in flow_preguntas_practica.py ([7e6effd](https://github.com/NickSalA/LuminAIBackend/commit/7e6effd77ecdb8fd1d0ecc121a4156d2a2c9a5bb))
+
 # [1.15.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.14.0...v1.15.0) (2025-11-30)
 
 
