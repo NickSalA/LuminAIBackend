@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.11.0...v1.12.0) (2025-11-30)
+
+
+### Features
+
+* Refactorizar feedback y retriever ([fc77276](https://github.com/NickSalA/LuminAIBackend/commit/fc7727609ddbea80d3ba0e55469356ce0b57ddd1))
+
 # [1.11.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.10.3...v1.11.0) (2025-11-30)
 
 
