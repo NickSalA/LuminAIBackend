@@ -80,7 +80,7 @@ def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respues
         contextoUsuario,
         reglasCriticas,
         privacidadVerificacion,
-        flujoTrabajo,
+        #flujoTrabajo,
         historial,
     )
     

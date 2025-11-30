@@ -111,7 +111,7 @@ def PromptSistema(user: dict, seccion: dict) -> str:
         informacionUsuario,
         reglasCriticas,
         privacidadVerificacion,
-        flujoTrabajo,
+        #flujoTrabajo,
         formatoRespuesta,
         guiaRespuesta,
         reglasComunicacion,
