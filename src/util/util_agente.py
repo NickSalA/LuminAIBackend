@@ -37,7 +37,14 @@ async def ejecutar(agente, consulta: str = "", config=None, verbose: bool = True
     try:
         if not verbose:
             return respuesta
-        return respuesta["messages"][-1].content
+        respuesta = respuesta["messages"][-1].content
+        
+        if isinstance(respuesta, str):
+            return respuesta
+        
+        respuesta = respuesta[0].get("text", "")
+        
+        return respuesta
     except Exception as e:
         raise Exception(f'Error en la ejecución del agente: {e}')
 
