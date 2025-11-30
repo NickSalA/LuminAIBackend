@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/NickSalA/LuminAIBackend/compare/v1.15.1...v1.15.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* set default value for run_manager in create_retriever_tool functions ([78da7d3](https://github.com/NickSalA/LuminAIBackend/commit/78da7d34f8e7e24a5a963f92ea2b0de497907028))
+
 ## [1.15.1](https://github.com/NickSalA/LuminAIBackend/compare/v1.15.0...v1.15.1) (2025-11-30)
 
 
