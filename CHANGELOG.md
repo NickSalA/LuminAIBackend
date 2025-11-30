@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.14.0...v1.15.0) (2025-11-30)
+
+
+### Features
+
+* update Dockerfile and .dockerignore, remove requirements.txt, and refactor security and session management ([c9b7b8a](https://github.com/NickSalA/LuminAIBackend/commit/c9b7b8a214913d93eafc6a5b25cd995e9276e26a))
+
 # [1.14.0](https://github.com/NickSalA/LuminAIBackend/compare/v1.13.0...v1.14.0) (2025-11-30)
 
 
