@@ -17,7 +17,7 @@ from toon_format import encode
 
 def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respuestas: List[dict] = []) -> str:
     username = user.get("username", "Daminin")
-    age = user.get("age", "20")
+    age = user.get("age", 20)
     
     levelName = seccion.get("levelName", "")
     sectionName = seccion.get("sectionName", "")

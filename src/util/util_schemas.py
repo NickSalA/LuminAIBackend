@@ -9,11 +9,11 @@ from typing import List, Optional
 # Modelos para recibir la información
 class chatTutorRequest(BaseModel):
     contextData: dict = Field (default={"levelName": "string", "sectionName": "string"}, description="Datos de contexto adicionales para el agente.")
-    userData: dict = Field (default={"username":"string", "age":"string"}, description="Datos del usuario para el agente.")
+    userData: dict = Field (default={"username":"string", "age":0}, description="Datos del usuario para el agente.")
 
 class chatRetroalimentacionRequest(BaseModel):
     contextData: dict = Field (default={"levelName": "string", "sectionName": "string"}, description="Datos de contexto adicionales para el agente.")
-    userData: dict = Field (default={"username": "string", "age": "string"}, description="Datos del usuario para el agente.")
+    userData: dict = Field (default={"username": "string", "age": 0}, description="Datos del usuario para el agente.")
     questions: List[dict] = Field (default=[], description="Preguntas realizadas por el agente.")
     answers: List[dict] = Field (default=[], description="Respuestas proporcionadas por el usuario.")
 
