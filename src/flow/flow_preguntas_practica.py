@@ -47,6 +47,7 @@ def PromptEvaluador(seccion: dict) -> str:
       3. Usa "INDENT" solo al inicio de la línea para sangría.
       4. Usa "MISSING" donde el usuario debe completar.
       5. "missingTokens" NO DEBE TENER DUPLICADOS. Oculta elementos diferentes (ej: una variable y un operador, no dos veces "=").
+      6. La cantidad de elementos en "missingTokens" DEBE SER EXACTAMENTE IGUAL a la cantidad de "MISSING" en "codeLines".
     """
 
     formatoJSON = (r"""
