@@ -7,12 +7,15 @@ from fastapi import HTTPException
 # 1. Carga las variables del archivo .env
 load_dotenv()
 
+from src.util.util_credenciales import obtenerAPI
+
 # --- Configuración de Oracle (leída desde .env) ---
+db_user = "admin"
+tns_name = "lumin_tp"
+
 wallet_path = os.getenv("ORACLE_WALLET_PATH")
-db_user = os.getenv("ORACLE_USER")
-db_password = os.getenv("ORACLE_PASSWORD")
-tns_name = os.getenv("ORACLE_TNS_NAME")
-wallet_password = os.getenv("ORACLE_WALLET_PASSWORD")
+db_password = obtenerAPI("CONF-ORACLE-PASSWORD")
+wallet_password = obtenerAPI("CONF-ORACLE-PASSWORD")
 
 pool = None # Inicia el pool como None
 

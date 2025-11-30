@@ -3,24 +3,20 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer # Para extraer el token del header
 from jose import JWTError, jwt # Para crear y verificar JWTs
-from passlib.context import CryptContext
-from dotenv import load_dotenv
-import os
 
+from src.util.util_credenciales import obtenerAPI
 
-load_dotenv()  # Carga las variables de entorno desde el archivo .env
 # --- Configuración ---
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+SECRET_KEY = obtenerAPI("CONF-JWT-SECRET-KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 500 # El tiempo que dura tu sesión (ej: 8 horas)
 
 # --- 2. Configuración de GOOGLE (para que la use tu API de login) ---
 # Lee las credenciales de Google que pusiste en tu .env
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+GOOGLE_CLIENT_ID = obtenerAPI("CONF-GOOGLE-CLIENT-ID")
+GOOGLE_CLIENT_SECRET = obtenerAPI("CONF-GOOGLE-CLIENT-SECRET")
+GOOGLE_REDIRECT_URI = "https://developers.google.com/oauthplayground"
 
 # --- Validación de que todo cargó bien ---
 if not SECRET_KEY:

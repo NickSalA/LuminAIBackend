@@ -1,0 +1,44 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.coverage
+htmlcov
+.venv
+venv
+env
+
+# Environment variables
+.env
+.env.*
+
+# IDEs
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node / JS
+node_modules
+package.json
+package-lock.json
+.releaserc
+
+# Documentation & Changelogs
+README.md
+CHANGELOG.md
+docs/
+
+# Testing
+test.py
+tests/
+
+# Docker
+Dockerfile
+.dockerignore

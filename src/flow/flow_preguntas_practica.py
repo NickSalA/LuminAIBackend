@@ -49,6 +49,8 @@ def PromptEvaluador(seccion: dict) -> str:
       5. "missingTokens" NO DEBE TENER DUPLICADOS. Oculta elementos diferentes (ej: una variable y un operador, no dos veces "=").
       6. La cantidad de elementos en "missingTokens" DEBE SER EXACTAMENTE IGUAL a la cantidad de "MISSING" en "codeLines".
       7. Mínimo deben ser 2 "MISSING" y por defecto 2 "missingTokens"
+      8. No uses "INDENT" en "missingTokens".
+      9. Has breves los "tokens".
     """
 
     formatoJSON = (r"""
