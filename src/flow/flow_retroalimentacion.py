@@ -1,7 +1,11 @@
 # Flujo para retroalimentación del tutor
 
-# Importa el agente tutor
+# Importa 
+from typing import List
+import json
+from toon_format import encode
 
+# Importa el agente tutor
 from src.agents.agente_tutor import AgenteTutor
 
 # Importa el modelo de lenguaje
@@ -10,10 +14,6 @@ from src.util.util_llm import obtenerModelo
 # Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
 
-# Importa 
-from typing import List
-import json
-from toon_format import encode
 
 def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respuestas: List[dict] = []) -> str:
     username = user.get("username", "Daminin")
@@ -53,11 +53,12 @@ def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respues
            - Estructura: Saludo -> Aciertos (resumidos en 1 línea) -> Errores (explicación breve y solución) -> Cierre motivador.
            - Sé conciso. Valora el tiempo del usuario.
 
-        2. **MODO TUTOR (Preguntas siguientes):**
-           - Si el usuario pregunta "por qué estaba mal la 5" o "¿qué es RAG?", cambia a modo explicativo.
-           - Aquí SÍ debes usar `BC_Tool` para buscar la teoría exacta.
-           - Explica con paciencia y ejemplos claros.
-
+        2. **MODO TUTOR (Cuando el usuario pide explicar/profundizar):**
+           - IMPORTANTE: Aunque el usuario diga "expláyate" o "dame más detalles", tu respuesta NO debe superar las 150 palabras (aprox. 2 párrafos cortos).
+           - Prioriza la densidad de información sobre la longitud.
+           - Usa "Bullet points" para resumir conceptos complejos.
+           - Evita analogías largas (como "imagina que el LLM es un bibliotecario..."). Ve directo a la explicación técnica simple.
+           - Si la respuesta requiere mucho texto, pregúntale al usuario: "¿Quieres que profundice en algún punto específico?" en lugar de soltar todo el texto de golpe.
         3. **Fuentes de Información:**
            - Para evaluar qué respondió el usuario: Mira el 'HISTORIAL'.
            - Para saber qué es correcto teóricamente: Mira la `BC_Tool`.
@@ -70,13 +71,11 @@ def PromptSistema(user: dict, seccion: dict, preguntas: List[dict] = [], respues
         """
     LÓGICA DE DECISIÓN:
         1. Analiza la intención del usuario.
-        2. ¿Pide Feedback/Resultados? -> Lee el HISTORIAL, compara con tu conocimiento interno (o BC_Tool si dudas) y genera el reporte conciso.
+        2. ¿Pide Feedback/Resultados? -> Lee el HISTORIAL, compara con tu conocimiento interno (o BC_Tool si dudas) y genera el reporte CONCISO.
         3. ¿Hace una pregunta de seguimiento o teórica? -> Consulta `BC_Tool` obligatoriamente y responde basándote en la evidencia encontrada.
     """
     )
-    
-    # Aquí pasamos el JSON, pero cuidado con que sea muy largo y confunda al modelo.
-    # A veces es mejor poner solo IDs y Respuestas si el prompt se llena mucho.
+
     historial = (
         f"""
     --- HISTORIAL DE LA PRÁCTICA RECIENTE ---

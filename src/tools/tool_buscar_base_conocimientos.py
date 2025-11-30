@@ -1,14 +1,13 @@
-# Utilitario para crear tool de base de conocimientos
-from src.util.util_base_conocimientos import create_retriever_tool
-
 # Manejo de herramientas y agentes
 from langchain_core.tools import Tool
 
 # Helpers propios
 from src.util.util_retriever import obtenerBaseDeConocimientos
 
-retriever = obtenerBaseDeConocimientos()
+# Utilitario para crear tool de base de conocimientos
+from src.util.util_base_conocimientos import create_retriever_tool
 
+retriever = obtenerBaseDeConocimientos()
 
 def BC_Tool() -> Tool:
     

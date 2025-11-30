@@ -71,13 +71,10 @@ def create_retriever_tool(
     document_separator: str = "\n\n",
     response_format: Literal["content", "content_and_artifact"] = "content",
 ) -> Tool:
-    """
-    Create a tool to do retrieval of documents.
-    Compatible with Python 3.12 and LangGraph.
-    """
+
     document_prompt = document_prompt or PromptTemplate.from_template("{page_content}")
 
-    def func(query: str, run_manager: object | None = None) -> str:
+    def func(query: str, run_manager):
         return _get_relevant_documents(
             query=query,
             retriever=retriever,
@@ -87,7 +84,7 @@ def create_retriever_tool(
             callbacks=run_manager
         )
 
-    async def afunc(query: str, run_manager: object | None = None) -> str:
+    async def afunc(query: str, run_manager):
         return await _aget_relevant_documents(
             query=query,
             retriever=retriever,

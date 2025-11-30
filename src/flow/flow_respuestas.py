@@ -1,5 +1,10 @@
 # Flujo para evaluar respuestas de práctica
 
+# Tipos
+from typing import List
+import json
+from toon_format import encode
+
 # Importa el agente evaluador
 from src.agents.agente_evaluador import AgenteEvaluador
 
@@ -8,11 +13,6 @@ from src.util.util_llm import obtenerModelo
 
 # Importa la herramienta para buscar en la base de conocimientos
 from src.tools.tool_buscar_base_conocimientos import BC_Tool
-
-# Tipos
-from typing import List
-import json
-from toon_format import encode
 
 def PromptEvaluador(preguntas: List[dict], respuestas: List[dict] = []) -> str:
     lenguaje = "Python"
